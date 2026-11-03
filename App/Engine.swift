@@ -8,7 +8,7 @@ import Vision
 /// Owns the whole pipeline: camera + loop player + still image in, one
 /// 1920x1080 frame out every 1/30s to the virtual camera (and the previews).
 final class Engine: ObservableObject {
-    enum Mode: String { case live, loop, image }
+    enum Mode: String { case live, loop, image, black }
 
     // 1080p to match OBS Virtual Camera's advertised format (Zoomie Cam uses the same).
     static let width = 1920
@@ -21,6 +21,12 @@ final class Engine: ObservableObject {
     @Published private(set) var recordingSeconds = 0.0
     @Published private(set) var hasLoop = false
     @Published private(set) var loopName: String?
+    /// True once a loop has been recorded (kept on disk between launches).
+    @Published private(set) var hasRecording = FileManager.default.fileExists(atPath: LoopRecorder.defaultURL.path)
+    /// Switch Zoom straight to the new loop when a recording stops.
+    @Published var autoPlayAfterRecording = UserDefaults.standard.object(forKey: "autoPlayAfterRecording") as? Bool ?? true {
+        didSet { UserDefaults.standard.set(autoPlayAfterRecording, forKey: "autoPlayAfterRecording") }
+    }
     @Published private(set) var hasImage = false
     @Published private(set) var imageName: String?
     @Published private(set) var cameraConnected = false
@@ -137,6 +143,7 @@ final class Engine: ObservableObject {
     }
 
     private func startCamera() {
+        NSLog("Zoomie Toolz: camera permission %d", AVCaptureDevice.authorizationStatus(for: .video).rawValue)
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
             camera.start(deviceID: selectedCameraID)
@@ -175,6 +182,18 @@ final class Engine: ObservableObject {
         setMode(mode == .image ? .live : .image)
     }
 
+    private var modeBeforeBlack: Mode = .live
+
+    /// Black screen on/off. Turning it off goes back to whatever was showing before.
+    func toggleBlack() {
+        if mode == .black {
+            setMode(modeBeforeBlack)
+        } else {
+            modeBeforeBlack = mode
+            setMode(.black)
+        }
+    }
+
     func toggleRecording() {
         isRecording ? stopRecording() : startRecording()
     }
@@ -185,6 +204,7 @@ final class Engine: ObservableObject {
         if mode != .live { setMode(.live) }
         player.stop()
         hasLoop = false
+        hasRecording = false  // the new take replaces the old file
         loopName = nil
         do {
             try recorder.start(width: Self.width, height: Self.height)
@@ -206,7 +226,9 @@ final class Engine: ObservableObject {
         isRecording = false
         recorder.stop { [weak self] url in
             guard let self, let url else { return }
+            self.hasRecording = true
             self.loadLoop(url)
+            if self.autoPlayAfterRecording { self.setMode(.loop) }
         }
     }
 
@@ -245,12 +267,6 @@ final class Engine: ObservableObject {
         }
     }
 
-    /// Uses a plain black frame as the still, like having your camera off.
-    func useBlackImage() {
-        setStill(CIImage(color: .black).cropped(to: CGRect(x: 0, y: 0, width: Self.width, height: Self.height)),
-                 name: "Black screen")
-    }
-
     private func setStill(_ image: CIImage, name: String) {
         let filled = aspectFill(image)
             .composited(over: CIImage(color: .black))
@@ -266,6 +282,24 @@ final class Engine: ObservableObject {
         stillPreview = NSImage(cgImage: cg, size: NSSize(width: cg.width, height: cg.height))
         renderQueue.async { self.still = flat }
         setMode(.image)
+    }
+
+    /// Loads the most recent recording (even if another video was loaded since) and loops it.
+    func playLastRecording() {
+        if isRecording {
+            // Finish the take first; it becomes the last recording.
+            isRecording = false
+            recorder.stop { [weak self] url in
+                guard let self, let url else { return }
+                self.hasRecording = true
+                self.loadLoop(url)
+                self.setMode(.loop)
+            }
+            return
+        }
+        guard hasRecording else { return }
+        if player.url != LoopRecorder.defaultURL { loadLoop(LoopRecorder.defaultURL) }
+        setMode(.loop)
     }
 
     func loadLoop(_ url: URL) {
@@ -294,11 +328,15 @@ final class Engine: ObservableObject {
             }
         }
 
+        // Live without camera frames shows a "Camera starting…" card, so it can
+        // never be mistaken for the black screen.
+        let live = camera.isReceivingFrames ? lastLive : noCameraCard
         func frame(for mode: Mode) -> CIImage? {
             switch mode {
-            case .live: return lastLive
+            case .live: return live
             case .loop: return lastLoop
             case .image: return still
+            case .black: return Self.blackFrame
             }
         }
         let target = frame(for: renderMode)
@@ -327,7 +365,7 @@ final class Engine: ObservableObject {
         sink.send(out)
         outputFeed.push(out)
 
-        if recorder.isRecording && renderMode == .live && lastLive != nil {
+        if recorder.isRecording && renderMode == .live && lastLive != nil && camera.isReceivingFrames {
             let t = CMTime(value: recordFrameIndex, timescale: CMTimeScale(Self.fps))
             recorder.append(out, at: t)
             recordFrameIndex += 1
@@ -372,6 +410,28 @@ final class Engine: ObservableObject {
             kCIInputMaskImageKey: mask,
         ])
     }
+
+    private static let blackFrame = CIImage(color: .black)
+        .cropped(to: CGRect(x: 0, y: 0, width: width, height: height))
+
+    /// Dark card with a message, shown in Live while the camera has no frames.
+    private lazy var noCameraCard: CIImage = {
+        let size = CGRect(x: 0, y: 0, width: Self.width, height: Self.height)
+        let background = CIImage(color: CIColor(red: 0.12, green: 0.12, blue: 0.14)).cropped(to: size)
+        guard let text = CIFilter(name: "CITextImageGenerator", parameters: [
+            "inputText": "Camera starting…",
+            "inputFontName": "HelveticaNeue",
+            "inputFontSize": 64,
+            "inputScaleFactor": 1,
+        ])?.outputImage else { return background }
+        // The generator draws black text; turn it light gray.
+        let dimmed = text.applyingFilter("CIColorMatrix", parameters: [
+            "inputBiasVector": CIVector(x: 0.75, y: 0.75, z: 0.78, w: 0),
+        ])
+        let x = (size.width - text.extent.width) / 2 - text.extent.minX
+        let y = (size.height - text.extent.height) / 2 - text.extent.minY
+        return dimmed.transformed(by: CGAffineTransform(translationX: x, y: y)).composited(over: background)
+    }()
 
     /// Scales and centers an image so it fills the 16:9 output frame.
     private func aspectFill(_ image: CIImage) -> CIImage {

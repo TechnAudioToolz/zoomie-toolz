@@ -171,6 +171,9 @@ struct ContentView: View {
             } else if engine.mode == .image {
                 Label("IMAGE", systemImage: "photo")
                     .foregroundStyle(.white).padding(6).background(.purple, in: Capsule())
+            } else if engine.mode == .black {
+                Label("BLACK", systemImage: "rectangle.fill")
+                    .foregroundStyle(.white).padding(6).background(.gray, in: Capsule())
             } else {
                 Label("LIVE", systemImage: "video.fill")
                     .foregroundStyle(.white).padding(6).background(.green, in: Capsule())
@@ -196,20 +199,30 @@ struct ContentView: View {
                     Text("Live").tag(Engine.Mode.live)
                     Text("Loop").tag(Engine.Mode.loop)
                     Text("Image").tag(Engine.Mode.image)
+                    Text("Black").tag(Engine.Mode.black)
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
-                .frame(width: 200)
-                .disabled((!engine.hasLoop && !engine.hasImage) || engine.isRecording)
+                .frame(width: 260)
+                .disabled(engine.isRecording)
 
                 Button(engine.isRecording ? "Stop Recording" : "Record Loop") {
                     engine.toggleRecording()
                 }
                 .tint(engine.isRecording ? .red : nil)
 
+                Button { engine.playLastRecording() } label: {
+                    Label("Play Last Recording", systemImage: "play.fill")
+                }
+                .disabled(!engine.hasRecording && !engine.isRecording)
+                .help("Loop your most recent recording in Zoom (⌃⌥P)")
+
                 Button("Load Video…") { pickVideo() }
                     .disabled(engine.isRecording)
             }
+
+            Toggle("Auto-play after recording", isOn: $engine.autoPlayAfterRecording)
+                .help("When you stop recording, Zoom switches straight to the new loop")
 
             HStack(spacing: 10) {
                 Toggle("Blur background", isOn: $engine.blurBackground)
@@ -227,10 +240,12 @@ struct ContentView: View {
                         Button("Freeze Frame") { engine.freezeFrame() }
                             .disabled(!engine.cameraConnected)
                             .help("Use what the camera shows right now as the still image")
-                        Button { engine.useBlackImage() } label: {
-                            Label("Black", systemImage: "rectangle.fill")
+                        Button { engine.toggleBlack() } label: {
+                            Label(engine.mode == .black ? "Unblack" : "Black",
+                                  systemImage: engine.mode == .black ? "rectangle" : "rectangle.fill")
                         }
-                        .help("Show a plain black screen in Zoom")
+                        .help(engine.mode == .black ? "Go back to what was showing before (⌃⌥K)"
+                                                    : "Show a plain black screen in Zoom (⌃⌥K)")
                     }
                 }
             }
@@ -240,7 +255,7 @@ struct ContentView: View {
                 .font(.caption).foregroundStyle(.secondary)
             Text(engine.imageName.map { "Image: \($0)" } ?? "No image yet. Choose a picture or freeze the current frame.")
                 .font(.caption).foregroundStyle(.secondary)
-            Text("Hotkeys work anywhere: ⌃⌥L Live/Loop · ⌃⌥I Live/Image · ⌃⌥B blur · ⌃⌥R record · ⌃⌥V Zoom video")
+            Text("Hotkeys work anywhere: ⌃⌥L Live/Loop · ⌃⌥I Live/Image · ⌃⌥K black · ⌃⌥B blur · ⌃⌥R record · ⌃⌥P play last recording · ⌃⌥V Zoom video")
                 .font(.caption).foregroundStyle(.secondary)
         }
     }

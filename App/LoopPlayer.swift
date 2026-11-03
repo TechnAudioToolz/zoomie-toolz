@@ -41,6 +41,7 @@ final class LoopPlayer {
         player = nil
         looper = nil
         lastFrame = nil
+        url = nil
     }
 
     /// The frame that should be on screen right now (or the previous one if nothing new).

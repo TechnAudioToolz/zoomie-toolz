@@ -15,6 +15,7 @@ struct ZoomieToolzApp: App {
         case .live: return "video.circle"
         case .loop: return "repeat.circle.fill"
         case .image: return "photo.circle.fill"
+        case .black: return "rectangle.fill"
         }
     }
 
@@ -33,6 +34,8 @@ struct ZoomieToolzApp: App {
                     hotKeys.register(keyCode: kVK_ANSI_R) { [engine] in engine.toggleRecording() }
                     hotKeys.register(keyCode: kVK_ANSI_I) { [engine] in engine.toggleImage() }
                     hotKeys.register(keyCode: kVK_ANSI_B) { [engine] in engine.toggleBlur() }
+                    hotKeys.register(keyCode: kVK_ANSI_K) { [engine] in engine.toggleBlack() }
+                    hotKeys.register(keyCode: kVK_ANSI_P) { [engine] in engine.playLastRecording() }
                     hotKeys.register(keyCode: kVK_ANSI_V) { [zoomVideo] in zoomVideo.toggle() }
                     // Let the window draw first, then walk through anything that's missing.
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
@@ -78,9 +81,11 @@ struct ZoomieToolzApp: App {
             Button(engine.mode == .image ? "Switch to Live" : "Show Image") { engine.toggleImage() }
                 .disabled(!engine.hasImage)
             Button("Freeze Frame") { engine.freezeFrame() }
-            Button("Black Screen") { engine.useBlackImage() }
+            Button(engine.mode == .black ? "Unblack" : "Black Screen") { engine.toggleBlack() }
             Toggle("Blur Background", isOn: Binding(get: { engine.blurBackground }, set: { engine.blurBackground = $0 }))
             Button(engine.isRecording ? "Stop Recording" : "Record Loop") { engine.toggleRecording() }
+            Button("Play Last Recording") { engine.playLastRecording() }
+                .disabled(!engine.hasRecording && !engine.isRecording)
             Divider()
             Button(zoomVideo.state == .videoOn ? "Stop Zoom Video" : "Start Zoom Video") { zoomVideo.toggle() }
                 .disabled(zoomVideo.state == .zoomNotRunning || zoomVideo.state == .notInMeeting)

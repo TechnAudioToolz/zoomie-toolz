@@ -50,9 +50,11 @@ final class CameraSource: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             guard let device = devices.first(where: { $0.uniqueID == deviceID }) ?? devices.first,
                   let input = try? AVCaptureDeviceInput(device: device),
                   session.canAddInput(input) else {
+                NSLog("Zoomie Toolz: camera failed to open (found %d cameras)", devices.count)
                 session.commitConfiguration()
                 return
             }
+            NSLog("Zoomie Toolz: using camera %@", device.localizedName)
             session.addInput(input)
             session.sessionPreset = session.canSetSessionPreset(.hd1920x1080) ? .hd1920x1080 : .hd1280x720
 
@@ -78,6 +80,9 @@ final class CameraSource: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
 
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let pb = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+        if lastFrameTime == 0 {
+            NSLog("Zoomie Toolz: first camera frame %dx%d", CVPixelBufferGetWidth(pb), CVPixelBufferGetHeight(pb))
+        }
         lock.lock(); _latest = pb; lastFrameTime = CACurrentMediaTime(); lock.unlock()
     }
 }
