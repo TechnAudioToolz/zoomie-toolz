@@ -8,7 +8,7 @@ Video reaches Zoom through **OBS Virtual Camera** (part of the free OBS Studio),
 
 ## Download
 
-**[Zoomie-Toolz-1.1.dmg](https://github.com/TechnAudioToolz/zoomie-toolz/releases/latest)** (under Assets on the latest release, about 2.5 MB)
+**[Zoomie-Toolz-1.1.1.dmg](https://github.com/TechnAudioToolz/zoomie-toolz/releases/latest)** (under Assets on the latest release, about 2.5 MB)
 
 - Needs **macOS 14 Sonoma or newer**, on Apple Silicon or Intel.
 - Open the `.dmg` and drag **Zoomie Toolz** to Applications.
@@ -35,8 +35,8 @@ Zoomie Toolz checks all of this every time it opens and shows a popup explaining
 - **Image:** show a still instead of live video (`⌃⌥I`). **Choose Image…** picks any picture and **Freeze Frame** grabs what your camera shows right now. Click the picture thumbnail to choose another.
 - **Black** (`⌃⌥K`): a plain black screen, like having your camera off while your Zoom video stays on. Press it again (**Unblack**) to go back to whatever was showing before.
 - **Blur background** (`⌃⌥B`): keeps you sharp and blurs everything behind you, with a strength slider. Uses Apple's on-device person detection. Loops recorded and frames frozen with blur on are blurred too.
-- **Start/Stop Zoom Video** (`⌃⌥V`): presses Zoom's own Start/Stop Video for you and shows whether your video is on. Needs Accessibility permission once (System Settings → Privacy & Security → Accessibility).
-- **Leave Zoom automatically:** quits Zoom at a set time, or in 15/30/60 minutes, which drops you from the meeting. The time is filled in with the next top of the hour when the app opens (open at 6:01 pm → 7:00 pm). **Leave Now** does it straight away.
+- **Start/Stop Zoom Video** (`⌃⌥V`): presses Zoom's own Start/Stop Video for you and shows whether your video is on. Optional: it's the only feature that needs Accessibility permission, and it asks the first time you use it (never at launch).
+- **Leave Zoom automatically:** force-quits Zoom at a set time, or in 15/30/60 minutes, which drops you straight out of the meeting (no "leave meeting?" prompt, no special permissions). The time is filled in with the next top of the hour when the app opens (open at 6:01 pm → 7:00 pm). **Leave Now** does it straight away.
 - **Smooth switching:** a short crossfade every time you change modes.
 - **Hotkeys work anywhere**, even while Zoom is in front. All controls are also in the **menu bar**, so you can close the window and keep it running.
 
@@ -99,6 +99,8 @@ OBS's camera extension and Zoomie Cam both have a "sink" stream that accepts fra
 | `Resources/donate.html` | The Donate page |
 
 ## Troubleshooting
+
+- **macOS keeps asking for camera or Accessibility permission:** every new build of the app (each update, or each time you build it yourself) is a "new app" to macOS, because it isn't signed with an Apple Developer certificate. Install it once in /Applications and open it from there; it keeps its permissions until you update it. If System Settings already shows Zoomie Toolz as allowed but it still asks, remove the old entry (−) and allow it again.
 
 - **Zoom shows the OBS logo instead of you:** make sure Zoomie Toolz is open and the Virtual camera dot is green. Quit and reopen Zoom if it was open before OBS's camera was approved.
 - **"OBS Virtual Camera" missing in Zoom:** the OBS approval didn't finish. Run **Check Setup…** and follow the popup.

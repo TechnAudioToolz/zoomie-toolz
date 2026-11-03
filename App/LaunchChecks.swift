@@ -4,11 +4,12 @@ import AVFoundation
 /// Walks through everything Zoomie Toolz needs, at launch (and from the
 /// "Check Setup…" menu item), and explains anything missing with a popup.
 ///
-/// Order: OBS installed → OBS Virtual Camera approved → camera access →
-/// Accessibility (optional, for the Zoom video button).
+/// Order: OBS installed → OBS Virtual Camera approved → camera access.
+/// Accessibility (only for the Start/Stop Zoom Video button) is never asked
+/// at launch; it's mentioned only by "Check Setup…" and asked when the
+/// button is used.
 enum LaunchChecks {
     static let obsBundleID = "com.obsproject.obs-studio"
-    private static let skipAccessibilityKey = "skipAccessibilityPrompt"
 
     /// - Parameter manual: true when the user asked for it; also reports "all good".
     static func run(engine: Engine, zoomVideo: ZoomVideoControl, manual: Bool = false) {
@@ -32,15 +33,11 @@ enum LaunchChecks {
             break // .notDetermined is handled by the system prompt when the camera starts.
         }
 
-        if !zoomVideo.isTrusted && (manual || !UserDefaults.standard.bool(forKey: skipAccessibilityKey)) {
-            allGood = false
-            askAccessibility(zoomVideo: zoomVideo)
-        }
-
         if manual && allGood {
             let alert = NSAlert()
             alert.messageText = "Everything's set up"
-            alert.informativeText = "OBS Virtual Camera is ready, the camera is allowed, and Zoom control is on. In Zoom, choose “\(engine.outputTarget.label)” under Settings → Video."
+            alert.informativeText = "The virtual camera is ready and the camera is allowed. In Zoom, choose “\(engine.outputTarget.label)” under Settings → Video."
+                + (zoomVideo.isTrusted ? "" : "\n\nOptional: the Start/Stop Zoom Video button needs Accessibility permission. It asks the first time you use it.")
             alert.runModal()
         }
     }
@@ -113,23 +110,6 @@ enum LaunchChecks {
         alert.addButton(withTitle: "Later")
         if alert.runModal() == .alertFirstButtonReturn {
             NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Camera")!)
-        }
-    }
-
-    private static func askAccessibility(zoomVideo: ZoomVideoControl) {
-        let alert = NSAlert()
-        alert.messageText = "Allow Zoomie Toolz to control Zoom video?"
-        alert.informativeText = "Optional. The Start/Stop Zoom Video button (⌃⌥V) presses Zoom's own Start/Stop Video for you. macOS needs you to allow this under Privacy & Security → Accessibility."
-        alert.addButton(withTitle: "Allow…")
-        alert.addButton(withTitle: "Not Now")
-        alert.showsSuppressionButton = true
-        alert.suppressionButton?.title = "Don't ask again at launch"
-        let response = alert.runModal()
-        if alert.suppressionButton?.state == .on {
-            UserDefaults.standard.set(true, forKey: skipAccessibilityKey)
-        }
-        if response == .alertFirstButtonReturn {
-            zoomVideo.requestPermission()
         }
     }
 }

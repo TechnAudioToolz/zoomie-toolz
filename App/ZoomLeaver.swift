@@ -1,9 +1,9 @@
 import AppKit
 import Combine
 
-/// Quits Zoom at a scheduled time, which drops you out of whatever meeting
-/// you're in. Tries a normal quit first, then force-quits if Zoom is still
-/// up a few seconds later (e.g. stuck on a "leave meeting?" prompt).
+/// Force-quits Zoom at a scheduled time, which drops you out of whatever
+/// meeting you're in. Uses NSRunningApplication, so no special permissions
+/// are needed, and force-quitting skips Zoom's "leave meeting?" prompt.
 final class ZoomLeaver: ObservableObject {
     static let zoomBundleID = "us.zoom.xos"
 
@@ -40,12 +40,8 @@ final class ZoomLeaver: ObservableObject {
             lastResult = "Zoom wasn't running"
             return
         }
-        apps.forEach { $0.terminate() }
-        lastResult = "Left Zoom at \(Date().formatted(date: .omitted, time: .shortened))"
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            NSRunningApplication.runningApplications(withBundleIdentifier: Self.zoomBundleID)
-                .forEach { $0.forceTerminate() }
-        }
+        apps.forEach { $0.forceTerminate() }
+        lastResult = "Quit Zoom at \(Date().formatted(date: .omitted, time: .shortened))"
     }
 
     private func startTimer() {
