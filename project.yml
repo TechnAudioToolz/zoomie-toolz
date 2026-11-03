@@ -1,0 +1,45 @@
+name: ZoomieToolz
+options:
+  deploymentTarget:
+    macOS: "14.0"
+configFiles:
+  Debug: Config/Signing.xcconfig
+  Release: Config/Signing.xcconfig
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    CODE_SIGN_STYLE: Automatic
+    ENABLE_HARDENED_RUNTIME: YES
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  ZoomieToolz:
+    type: application
+    platform: macOS
+    sources:
+      - App
+      - path: Resources
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_NAME: Zoomie Toolz
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID)
+        INFOPLIST_FILE: Config/App-Info.plist
+        CODE_SIGN_ENTITLEMENTS: Config/App.entitlements
+        GENERATE_INFOPLIST_FILE: NO
+    dependencies:
+      - target: ZoomieCamExtension
+        embed: true
+        codeSign: true
+  ZoomieCamExtension:
+    type: system-extension
+    platform: macOS
+    sources: [Extension]
+    settings:
+      base:
+        PRODUCT_NAME: $(APP_BUNDLE_ID).camera
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID).camera
+        INFOPLIST_FILE: Config/Extension-Info.plist
+        CODE_SIGN_ENTITLEMENTS: Config/Extension.entitlements
+        GENERATE_INFOPLIST_FILE: NO
+        SKIP_INSTALL: YES

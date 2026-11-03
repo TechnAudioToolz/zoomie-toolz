@@ -1,0 +1,12 @@
+.DS_Store
+
+# Build output (release DMGs go on GitHub Releases, not in the repo)
+build/
+*.dmg
+xcuserdata/
+*.xcuserstate
+
+# recordings never go in the repo
+*.mov
+*.mp4
+*.m4v

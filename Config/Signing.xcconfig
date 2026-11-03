@@ -1,0 +1,8 @@
+// Put your Apple Developer Team ID here (Xcode → Settings → Accounts, or
+// developer.apple.com → Membership). A paid account is required for the
+// camera system extension.
+DEVELOPMENT_TEAM =
+
+// Change this if you want a different bundle ID. The camera extension
+// is always <this>.camera.
+APP_BUNDLE_ID = com.kevinburns.zoomietoolz

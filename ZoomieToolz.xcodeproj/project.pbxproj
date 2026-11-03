@@ -1,0 +1,510 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		063B29F8D3B2BA6C6FD90DB9 /* SinkFeeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77A16D8001F1E0A1DCDEA58 /* SinkFeeder.swift */; };
+		09BE0C3C629DCE9FF431DAC2 /* ZoomieProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70DCC0BD7615C7D361B11A8 /* ZoomieProvider.swift */; };
+		0C22C7B1793EF7D539714C93 /* ZoomieCamExtension.systemextension in Embed System Extensions */ = {isa = PBXBuildFile; fileRef = E67C616CFD3F225FEEB46352 /* ZoomieCamExtension.systemextension */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		261BA6C92B49DB5F382C5621 /* Engine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2DEAECFF16FFE4DA00E27F /* Engine.swift */; };
+		31BC2AD8420C724C1235B720 /* LaunchChecks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A267F2865C4EB2D604F414E5 /* LaunchChecks.swift */; };
+		3B7DB1322BE519BC12689C8E /* ExtensionInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAD22384F7BF7A02BD398445 /* ExtensionInstaller.swift */; };
+		3CD64469FCBF1CCB81B0C817 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 198F62D6BEE8E1A9F1EE135C /* ContentView.swift */; };
+		3E259FC75F5EA68C365614D2 /* ZoomVideoControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F46AA128151848DA0B1F8B /* ZoomVideoControl.swift */; };
+		49F678F259492389C1E845D9 /* donate.html in Resources */ = {isa = PBXBuildFile; fileRef = 74E3C38CC8A00608E45B2049 /* donate.html */; };
+		57D440E41259EA403C838234 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = A8F960E32AC72F223B0121AF /* AppIcon.icns */; };
+		91383C1613DF19E83949DF98 /* LoopRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2635AA6499FCD40B6B18206 /* LoopRecorder.swift */; };
+		94FA9543048F83A219575394 /* ZoomLeaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3EC32CB65E3D7F2E4EB007 /* ZoomLeaver.swift */; };
+		A9031518420509A1A9115A12 /* LoopPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC3E092B729B156CEA212DC9 /* LoopPlayer.swift */; };
+		B6C023979344CB52ECD3A848 /* CameraSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140C22B0C663397AA0C7174F /* CameraSource.swift */; };
+		B77264EF0A2F93DC423323F2 /* ZoomieToolzApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5270817346E88B152845A4F /* ZoomieToolzApp.swift */; };
+		BB5FCDB692063B9848A76D81 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7827ABE91BE6946765E98C01 /* main.swift */; };
+		C68C9C37582A29F28B2E6757 /* LiveVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1AEDAC7BA50727366B7CBB /* LiveVideo.swift */; };
+		F428DB668604F777E4772252 /* HotKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EF6ECC2B7A146FD0F4B19E8 /* HotKeys.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3B1CE8D19127B79854EDE442 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B23E6F2FF7BDB563AF0145AF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 181EE16964F3327FD213B605;
+			remoteInfo = ZoomieCamExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		618A1F791CC48211B2516805 /* Embed System Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(SYSTEM_EXTENSIONS_FOLDER_PATH)";
+			dstSubfolderSpec = 16;
+			files = (
+				0C22C7B1793EF7D539714C93 /* ZoomieCamExtension.systemextension in Embed System Extensions */,
+			);
+			name = "Embed System Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		09F3F779977C492356F93007 /* ZoomieToolz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZoomieToolz.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		140C22B0C663397AA0C7174F /* CameraSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSource.swift; sourceTree = "<group>"; };
+		198F62D6BEE8E1A9F1EE135C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2C3EC32CB65E3D7F2E4EB007 /* ZoomLeaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomLeaver.swift; sourceTree = "<group>"; };
+		5A1AEDAC7BA50727366B7CBB /* LiveVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideo.swift; sourceTree = "<group>"; };
+		74E3C38CC8A00608E45B2049 /* donate.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = donate.html; sourceTree = "<group>"; };
+		7827ABE91BE6946765E98C01 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		8EF6ECC2B7A146FD0F4B19E8 /* HotKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKeys.swift; sourceTree = "<group>"; };
+		A267F2865C4EB2D604F414E5 /* LaunchChecks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchChecks.swift; sourceTree = "<group>"; };
+		A8F960E32AC72F223B0121AF /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
+		AAD22384F7BF7A02BD398445 /* ExtensionInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionInstaller.swift; sourceTree = "<group>"; };
+		AD2DEAECFF16FFE4DA00E27F /* Engine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Engine.swift; sourceTree = "<group>"; };
+		B5270817346E88B152845A4F /* ZoomieToolzApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomieToolzApp.swift; sourceTree = "<group>"; };
+		C2635AA6499FCD40B6B18206 /* LoopRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopRecorder.swift; sourceTree = "<group>"; };
+		C70DCC0BD7615C7D361B11A8 /* ZoomieProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomieProvider.swift; sourceTree = "<group>"; };
+		CC3E092B729B156CEA212DC9 /* LoopPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopPlayer.swift; sourceTree = "<group>"; };
+		E67C616CFD3F225FEEB46352 /* ZoomieCamExtension.systemextension */ = {isa = PBXFileReference; explicitFileType = "wrapper.system-extension"; includeInIndex = 0; path = ZoomieCamExtension.systemextension; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5B47F24976A358CA766CD94 /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
+		F77A16D8001F1E0A1DCDEA58 /* SinkFeeder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SinkFeeder.swift; sourceTree = "<group>"; };
+		F9F46AA128151848DA0B1F8B /* ZoomVideoControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomVideoControl.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		6E33ABAB1D1397FEA11357B1 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				140C22B0C663397AA0C7174F /* CameraSource.swift */,
+				198F62D6BEE8E1A9F1EE135C /* ContentView.swift */,
+				AD2DEAECFF16FFE4DA00E27F /* Engine.swift */,
+				AAD22384F7BF7A02BD398445 /* ExtensionInstaller.swift */,
+				8EF6ECC2B7A146FD0F4B19E8 /* HotKeys.swift */,
+				A267F2865C4EB2D604F414E5 /* LaunchChecks.swift */,
+				5A1AEDAC7BA50727366B7CBB /* LiveVideo.swift */,
+				CC3E092B729B156CEA212DC9 /* LoopPlayer.swift */,
+				C2635AA6499FCD40B6B18206 /* LoopRecorder.swift */,
+				F77A16D8001F1E0A1DCDEA58 /* SinkFeeder.swift */,
+				B5270817346E88B152845A4F /* ZoomieToolzApp.swift */,
+				2C3EC32CB65E3D7F2E4EB007 /* ZoomLeaver.swift */,
+				F9F46AA128151848DA0B1F8B /* ZoomVideoControl.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		7C57CAEB6CB0D6AE71158FC5 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				F5B47F24976A358CA766CD94 /* Signing.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		7E189BC07DC877F411EA63C1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E67C616CFD3F225FEEB46352 /* ZoomieCamExtension.systemextension */,
+				09F3F779977C492356F93007 /* ZoomieToolz.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D3C7D5BE544E4C609B1FF0AA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A8F960E32AC72F223B0121AF /* AppIcon.icns */,
+				74E3C38CC8A00608E45B2049 /* donate.html */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		F945FDCC719BE95E8F5D4663 = {
+			isa = PBXGroup;
+			children = (
+				6E33ABAB1D1397FEA11357B1 /* App */,
+				7C57CAEB6CB0D6AE71158FC5 /* Config */,
+				FDA01ADCBF4B01777D48942C /* Extension */,
+				D3C7D5BE544E4C609B1FF0AA /* Resources */,
+				7E189BC07DC877F411EA63C1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FDA01ADCBF4B01777D48942C /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				7827ABE91BE6946765E98C01 /* main.swift */,
+				C70DCC0BD7615C7D361B11A8 /* ZoomieProvider.swift */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		07F95B3DF210062D769AA06A /* ZoomieToolz */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0EBD132A56E69CF99DF35F33 /* Build configuration list for PBXNativeTarget "ZoomieToolz" */;
+			buildPhases = (
+				07675D076166453BEFE71F76 /* Sources */,
+				42FC03FEFCD86D4D2D40F473 /* Resources */,
+				618A1F791CC48211B2516805 /* Embed System Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5C1E37C962A7D39A45EFC4F7 /* PBXTargetDependency */,
+			);
+			name = ZoomieToolz;
+			packageProductDependencies = (
+			);
+			productName = ZoomieToolz;
+			productReference = 09F3F779977C492356F93007 /* ZoomieToolz.app */;
+			productType = "com.apple.product-type.application";
+		};
+		181EE16964F3327FD213B605 /* ZoomieCamExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 50B3C6EB988395274E082E33 /* Build configuration list for PBXNativeTarget "ZoomieCamExtension" */;
+			buildPhases = (
+				8BE9AD845B48EFDC40B1F8D5 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ZoomieCamExtension;
+			packageProductDependencies = (
+			);
+			productName = ZoomieCamExtension;
+			productReference = E67C616CFD3F225FEEB46352 /* ZoomieCamExtension.systemextension */;
+			productType = "com.apple.product-type.system-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B23E6F2FF7BDB563AF0145AF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					07F95B3DF210062D769AA06A = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					181EE16964F3327FD213B605 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = F7D7DD29526529B592A432EA /* Build configuration list for PBXProject "ZoomieToolz" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = F945FDCC719BE95E8F5D4663;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 7E189BC07DC877F411EA63C1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				07F95B3DF210062D769AA06A /* ZoomieToolz */,
+				181EE16964F3327FD213B605 /* ZoomieCamExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		42FC03FEFCD86D4D2D40F473 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				57D440E41259EA403C838234 /* AppIcon.icns in Resources */,
+				49F678F259492389C1E845D9 /* donate.html in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		07675D076166453BEFE71F76 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B6C023979344CB52ECD3A848 /* CameraSource.swift in Sources */,
+				3CD64469FCBF1CCB81B0C817 /* ContentView.swift in Sources */,
+				261BA6C92B49DB5F382C5621 /* Engine.swift in Sources */,
+				3B7DB1322BE519BC12689C8E /* ExtensionInstaller.swift in Sources */,
+				F428DB668604F777E4772252 /* HotKeys.swift in Sources */,
+				31BC2AD8420C724C1235B720 /* LaunchChecks.swift in Sources */,
+				C68C9C37582A29F28B2E6757 /* LiveVideo.swift in Sources */,
+				A9031518420509A1A9115A12 /* LoopPlayer.swift in Sources */,
+				91383C1613DF19E83949DF98 /* LoopRecorder.swift in Sources */,
+				063B29F8D3B2BA6C6FD90DB9 /* SinkFeeder.swift in Sources */,
+				94FA9543048F83A219575394 /* ZoomLeaver.swift in Sources */,
+				3E259FC75F5EA68C365614D2 /* ZoomVideoControl.swift in Sources */,
+				B77264EF0A2F93DC423323F2 /* ZoomieToolzApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8BE9AD845B48EFDC40B1F8D5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09BE0C3C629DCE9FF431DAC2 /* ZoomieProvider.swift in Sources */,
+				BB5FCDB692063B9848A76D81 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5C1E37C962A7D39A45EFC4F7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 181EE16964F3327FD213B605 /* ZoomieCamExtension */;
+			targetProxy = 3B1CE8D19127B79854EDE442 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1E99B6F6CBE4F6F506176345 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F5B47F24976A358CA766CD94 /* Signing.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		3BFEF8967DB60A8A2BD369BB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/App.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Config/App-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_ID)";
+				PRODUCT_NAME = "Zoomie Toolz";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		9E01A6A8B6E14CDA0BCD2E00 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Config/Extension.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Config/Extension-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_ID).camera";
+				PRODUCT_NAME = "$(APP_BUNDLE_ID).camera";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		A355A8A1927B0A492F89548C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Config/Extension.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Config/Extension-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_ID).camera";
+				PRODUCT_NAME = "$(APP_BUNDLE_ID).camera";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		B7366924B53986AE1CD29202 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F5B47F24976A358CA766CD94 /* Signing.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		FDB0103D9507BF87654297A3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Config/App.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Config/App-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(APP_BUNDLE_ID)";
+				PRODUCT_NAME = "Zoomie Toolz";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0EBD132A56E69CF99DF35F33 /* Build configuration list for PBXNativeTarget "ZoomieToolz" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FDB0103D9507BF87654297A3 /* Debug */,
+				3BFEF8967DB60A8A2BD369BB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		50B3C6EB988395274E082E33 /* Build configuration list for PBXNativeTarget "ZoomieCamExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A355A8A1927B0A492F89548C /* Debug */,
+				9E01A6A8B6E14CDA0BCD2E00 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F7D7DD29526529B592A432EA /* Build configuration list for PBXProject "ZoomieToolz" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B7366924B53986AE1CD29202 /* Debug */,
+				1E99B6F6CBE4F6F506176345 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B23E6F2FF7BDB563AF0145AF /* Project object */;
+}
