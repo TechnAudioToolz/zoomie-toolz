@@ -7,6 +7,7 @@ struct ContentView: View {
     @EnvironmentObject var leaver: ZoomLeaver
     @EnvironmentObject var installer: ExtensionInstaller
     @EnvironmentObject var zoomVideo: ZoomVideoControl
+    @EnvironmentObject var updater: UpdateChecker
     @Environment(\.openWindow) private var openWindow
 
     @State private var cameras: [AVCaptureDevice] = []
@@ -29,6 +30,8 @@ struct ContentView: View {
                     leaveSection
                     Divider()
                     setupSection
+                    Divider()
+                    updatesSection
                 }
                 .padding([.horizontal, .bottom], 20)
                 .padding(.top, 4)
@@ -312,6 +315,19 @@ struct ContentView: View {
             case .zoomieCam:
                 zoomieCamSetup
             }
+        }
+    }
+
+    private var updatesSection: some View {
+        HStack(spacing: 12) {
+            Text("Updates").font(.headline)
+            Toggle("Check automatically", isOn: $updater.checkAutomatically)
+                .help("Once a day at launch, asks GitHub for the latest version number. Nothing else is sent.")
+            Button("Check Now") { updater.check(manual: true) }
+                .disabled(updater.isChecking)
+            Text(updater.status ?? "Version \(UpdateChecker.currentVersion)")
+                .font(.caption).foregroundStyle(.secondary)
+            Spacer()
         }
     }
 

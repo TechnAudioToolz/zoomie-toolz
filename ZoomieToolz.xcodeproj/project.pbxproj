@@ -17,6 +17,7 @@
 		3E259FC75F5EA68C365614D2 /* ZoomVideoControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F46AA128151848DA0B1F8B /* ZoomVideoControl.swift */; };
 		49F678F259492389C1E845D9 /* donate.html in Resources */ = {isa = PBXBuildFile; fileRef = 74E3C38CC8A00608E45B2049 /* donate.html */; };
 		57D440E41259EA403C838234 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = A8F960E32AC72F223B0121AF /* AppIcon.icns */; };
+		87333976C0FCD4CEA8298A86 /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5EC72BF480F05FC23F4DFC /* UpdateChecker.swift */; };
 		91383C1613DF19E83949DF98 /* LoopRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2635AA6499FCD40B6B18206 /* LoopRecorder.swift */; };
 		94FA9543048F83A219575394 /* ZoomLeaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3EC32CB65E3D7F2E4EB007 /* ZoomLeaver.swift */; };
 		A9031518420509A1A9115A12 /* LoopPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC3E092B729B156CEA212DC9 /* LoopPlayer.swift */; };
@@ -69,6 +70,7 @@
 		C70DCC0BD7615C7D361B11A8 /* ZoomieProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomieProvider.swift; sourceTree = "<group>"; };
 		CC3E092B729B156CEA212DC9 /* LoopPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopPlayer.swift; sourceTree = "<group>"; };
 		E67C616CFD3F225FEEB46352 /* ZoomieCamExtension.systemextension */ = {isa = PBXFileReference; explicitFileType = "wrapper.system-extension"; includeInIndex = 0; path = ZoomieCamExtension.systemextension; sourceTree = BUILT_PRODUCTS_DIR; };
+		EA5EC72BF480F05FC23F4DFC /* UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateChecker.swift; sourceTree = "<group>"; };
 		F5B47F24976A358CA766CD94 /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
 		F77A16D8001F1E0A1DCDEA58 /* SinkFeeder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SinkFeeder.swift; sourceTree = "<group>"; };
 		F9F46AA128151848DA0B1F8B /* ZoomVideoControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomVideoControl.swift; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 				CC3E092B729B156CEA212DC9 /* LoopPlayer.swift */,
 				C2635AA6499FCD40B6B18206 /* LoopRecorder.swift */,
 				F77A16D8001F1E0A1DCDEA58 /* SinkFeeder.swift */,
+				EA5EC72BF480F05FC23F4DFC /* UpdateChecker.swift */,
 				B5270817346E88B152845A4F /* ZoomieToolzApp.swift */,
 				2C3EC32CB65E3D7F2E4EB007 /* ZoomLeaver.swift */,
 				F9F46AA128151848DA0B1F8B /* ZoomVideoControl.swift */,
@@ -247,6 +250,7 @@
 				A9031518420509A1A9115A12 /* LoopPlayer.swift in Sources */,
 				91383C1613DF19E83949DF98 /* LoopRecorder.swift in Sources */,
 				063B29F8D3B2BA6C6FD90DB9 /* SinkFeeder.swift in Sources */,
+				87333976C0FCD4CEA8298A86 /* UpdateChecker.swift in Sources */,
 				94FA9543048F83A219575394 /* ZoomLeaver.swift in Sources */,
 				3E259FC75F5EA68C365614D2 /* ZoomVideoControl.swift in Sources */,
 				B77264EF0A2F93DC423323F2 /* ZoomieToolzApp.swift in Sources */,
@@ -309,7 +313,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -323,7 +327,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -424,7 +428,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -444,7 +448,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

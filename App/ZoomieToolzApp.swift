@@ -7,6 +7,7 @@ struct ZoomieToolzApp: App {
     @StateObject private var leaver = ZoomLeaver()
     @StateObject private var installer = ExtensionInstaller()
     @StateObject private var zoomVideo = ZoomVideoControl()
+    @StateObject private var updater = UpdateChecker()
     @State private var hotKeys = HotKeys()
     @State private var started = false
 
@@ -26,6 +27,7 @@ struct ZoomieToolzApp: App {
                 .environmentObject(leaver)
                 .environmentObject(installer)
                 .environmentObject(zoomVideo)
+                .environmentObject(updater)
                 .onAppear {
                     guard !started else { return }
                     started = true
@@ -40,6 +42,7 @@ struct ZoomieToolzApp: App {
                     // Let the window draw first, then walk through anything that's missing.
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                         LaunchChecks.run(engine: engine, zoomVideo: zoomVideo)
+                        updater.checkAtLaunchIfDue()
                     }
                 }
         }
@@ -47,6 +50,7 @@ struct ZoomieToolzApp: App {
         .defaultSize(width: 1240, height: 880)
         .commands {
             CommandGroup(after: .appInfo) {
+                Button("Check for Updates…") { updater.check(manual: true) }
                 Button("Check Setup…") { LaunchChecks.run(engine: engine, zoomVideo: zoomVideo, manual: true) }
             }
             CommandGroup(after: .windowArrangement) {
@@ -102,8 +106,12 @@ struct ZoomieToolzApp: App {
                 NSApp.activate(ignoringOtherApps: true)
                 LaunchChecks.run(engine: engine, zoomVideo: zoomVideo, manual: true)
             }
+            Button("Check for Updates…") {
+                NSApp.activate(ignoringOtherApps: true)
+                updater.check(manual: true)
+            }
             Button("Donate…") { openDonatePage() }
-                        Button("Quit Zoomie Toolz") { NSApp.terminate(nil) }
+            Button("Quit Zoomie Toolz") { NSApp.terminate(nil) }
         }
     }
 }
