@@ -8,7 +8,7 @@ Video reaches Zoom through **OBS Virtual Camera** (part of the free OBS Studio),
 
 ## Download
 
-**[Zoomie-Toolz-1.2.dmg](https://github.com/TechnAudioToolz/zoomie-toolz/releases/latest)** (under Assets on the latest release, about 2.5 MB)
+**[Zoomie-Toolz-1.2.1.dmg](https://github.com/TechnAudioToolz/zoomie-toolz/releases/latest)** (under Assets on the latest release, about 2.5 MB)
 
 - Needs **macOS 14 Sonoma or newer**, on Apple Silicon or Intel.
 - Open the `.dmg` and drag **Zoomie Toolz** to Applications.
@@ -31,9 +31,9 @@ Zoomie Toolz checks all of this every time it opens and shows a popup explaining
 
 - **Live previews:** *Input* (your camera, untouched) and *Output* (exactly what Zoom sees) side by side. The window resizes and the previews grow with it. The ↗ button on each opens it in its own window (`⌥⌘1` / `⌥⌘2`).
 - **Live:** passes your camera straight through.
-- **Loop:** **Record Loop** (`⌃⌥R`), sit naturally for 10–30 seconds, and stop. With **Auto-play after recording** on (the default), Zoom switches straight to the clip on repeat. **Play Last Recording** (`⌃⌥P`) loops your most recent take any time, even after loading another video. **Load Video…** loops any movie file instead.
+- **Loop:** **Record Loop** (`⌃⌥R`), sit naturally for 10–30 seconds, and stop. With **Auto-play after recording** on (the default), Zoom switches straight to the clip on repeat. **Play Last Recording** (`⌃⌥P`) loops your most recent take any time, even after loading another video. **Load Video…** loops any movie file instead, and the folder button next to it opens your recordings folder in Finder. If a take records nothing, Zoomie tells you why and keeps your previous recording.
 - **Image:** show a still instead of live video (`⌃⌥I`). **Choose Image…** picks any picture and **Freeze Frame** grabs what your camera shows right now. Click the picture thumbnail to choose another.
-- **Black** (`⌃⌥K`): a plain black screen, like having your camera off while your Zoom video stays on. Press it again (**Unblack**) to go back to whatever was showing before.
+- **Black** (`⌃⌥K`): a plain black screen, like having your camera off while your Zoom video stays on. Press it again (**Unblack**) to go back to whatever was showing before, or press **Live** next to it to go straight to your camera.
 - **Blur background** (`⌃⌥B`): keeps you sharp and blurs everything behind you, with a strength slider. Uses Apple's on-device person detection. Loops recorded and frames frozen with blur on are blurred too.
 - **Start/Stop Zoom Video** (`⌃⌥V`): presses Zoom's own Start/Stop Video for you and shows whether your video is on. Optional: it's the only feature that needs Accessibility permission, and it asks the first time you use it (never at launch).
 - **Leave Zoom automatically:** force-quits Zoom at a set time, or in 15/30/60 minutes, which drops you straight out of the meeting (no "leave meeting?" prompt, no special permissions). The time is filled in with the next top of the hour when the app opens (open at 6:01 pm → 7:00 pm). **Leave Now** does it straight away.
@@ -43,7 +43,7 @@ Zoomie Toolz checks all of this every time it opens and shows a popup explaining
 
 Tip: for a loop nobody notices, start and end the clip in roughly the same pose.
 
-If the camera isn't sending frames yet (for example while macOS is still asking for camera permission), Live shows a "Camera starting…" card.
+If the camera stops sending video (for example after your Mac sleeps), Zoomie restarts it by itself. If the camera isn't sending frames yet (for example while macOS is still asking for camera permission), Live shows a "Camera starting…" card.
 
 Zoomie Toolz has to stay running for Zoom to see your video. If it's closed, OBS Virtual Camera shows OBS's placeholder.
 

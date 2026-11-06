@@ -22,7 +22,7 @@ final class Engine: ObservableObject {
     @Published private(set) var hasLoop = false
     @Published private(set) var loopName: String?
     /// True once a loop has been recorded (kept on disk between launches).
-    @Published private(set) var hasRecording = FileManager.default.fileExists(atPath: LoopRecorder.defaultURL.path)
+    @Published private(set) var hasRecording = LoopRecorder.hasSavedTake
     /// Switch Zoom straight to the new loop when a recording stops.
     @Published var autoPlayAfterRecording = UserDefaults.standard.object(forKey: "autoPlayAfterRecording") as? Bool ?? true {
         didSet { UserDefaults.standard.set(autoPlayAfterRecording, forKey: "autoPlayAfterRecording") }
@@ -102,8 +102,9 @@ final class Engine: ObservableObject {
     }()
     private let sequenceHandler = VNSequenceRequestHandler()
     private var recordStart: CFTimeInterval = 0
-    private var recordFrameIndex: Int64 = 0
     private var tickCount = 0
+    private var cameraQuietSince: CFTimeInterval?
+    private var lastCameraRestart: CFTimeInterval = 0
 
     init() {
         let attrs: [String: Any] = [
@@ -117,7 +118,7 @@ final class Engine: ObservableObject {
         renderBlur = blurBackground
         renderBlurAmount = blurAmount
 
-        if FileManager.default.fileExists(atPath: LoopRecorder.defaultURL.path) {
+        if LoopRecorder.hasSavedTake {
             loadLoop(LoopRecorder.defaultURL)
         }
         if let image = CIImage(contentsOf: Self.stillURL) {
@@ -202,9 +203,9 @@ final class Engine: ObservableObject {
         guard !isRecording else { return }
         // Always record what the camera sees, even if we're showing something else.
         if mode != .live { setMode(.live) }
+        // The previous take stays on disk (and playable) until this one succeeds.
         player.stop()
         hasLoop = false
-        hasRecording = false  // the new take replaces the old file
         loopName = nil
         do {
             try recorder.start(width: Self.width, height: Self.height)
@@ -216,20 +217,51 @@ final class Engine: ObservableObject {
         recordingSeconds = 0
         renderQueue.async {
             self.recordStart = CACurrentMediaTime()
-            self.recordFrameIndex = 0
             self.lastLoop = nil
         }
     }
 
     func stopRecording() {
+        finishTake(thenPlay: autoPlayAfterRecording)
+    }
+
+    /// Stops the take in progress. A good take becomes the new last recording;
+    /// a failed one is explained and the previous take is kept.
+    private func finishTake(thenPlay: Bool) {
         guard isRecording else { return }
         isRecording = false
-        recorder.stop { [weak self] url in
-            guard let self, let url else { return }
-            self.hasRecording = true
-            self.loadLoop(url)
-            if self.autoPlayAfterRecording { self.setMode(.loop) }
+        recorder.stop { [weak self] outcome in
+            guard let self else { return }
+            switch outcome {
+            case .saved(let url, _):
+                self.hasRecording = true
+                self.loadLoop(url)
+                if thenPlay { self.setMode(.loop) }
+            case .noFrames, .failed:
+                if LoopRecorder.hasSavedTake {
+                    self.hasRecording = true
+                    self.loadLoop(LoopRecorder.defaultURL)
+                }
+                self.explainFailedTake(outcome)
+            }
         }
+    }
+
+    private func explainFailedTake(_ outcome: LoopRecorder.Outcome) {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = "Nothing was recorded"
+        let kept = LoopRecorder.hasSavedTake ? "\n\nYour previous recording is still there: Play Last Recording plays it." : ""
+        switch outcome {
+        case .noFrames:
+            alert.informativeText = "The camera wasn't sending video during the recording (Live shows “Camera starting…” when that happens). Check the Input preview, pick your camera again if needed, and try once more." + kept
+        case .failed(let reason):
+            alert.informativeText = "The recording couldn't be saved: \(reason)" + kept
+        case .saved:
+            return
+        }
+        NSApp.activate(ignoringOtherApps: true)
+        alert.runModal()
     }
 
     func renameCamera(to name: String) {
@@ -288,13 +320,7 @@ final class Engine: ObservableObject {
     func playLastRecording() {
         if isRecording {
             // Finish the take first; it becomes the last recording.
-            isRecording = false
-            recorder.stop { [weak self] url in
-                guard let self, let url else { return }
-                self.hasRecording = true
-                self.loadLoop(url)
-                self.setMode(.loop)
-            }
+            finishTake(thenPlay: true)
             return
         }
         guard hasRecording else { return }
@@ -365,10 +391,14 @@ final class Engine: ObservableObject {
         sink.send(out)
         outputFeed.push(out)
 
-        if recorder.isRecording && renderMode == .live && lastLive != nil && camera.isReceivingFrames {
-            let t = CMTime(value: recordFrameIndex, timescale: CMTimeScale(Self.fps))
-            recorder.append(out, at: t)
-            recordFrameIndex += 1
+        if recorder.isRecording {
+            let receiving = camera.isReceivingFrames
+            if renderMode == .live && lastLive != nil && receiving {
+                recorder.append(out, fps: CMTimeScale(Self.fps))
+            } else if tickCount % 30 == 0 {
+                NSLog("Zoomie Toolz: recording waiting for camera (mode %@, have frame %d, camera sending %d)",
+                      renderMode.rawValue, lastLive != nil ? 1 : 0, receiving ? 1 : 0)
+            }
         }
 
         // Status a few times a second is plenty and keeps the main thread quiet.
@@ -376,6 +406,20 @@ final class Engine: ObservableObject {
         if tickCount % 6 == 0 {
             let connected = camera.isReceivingFrames
             let sinkConnected = sink.isConnected
+            // Camera watchdog: if frames stop (Mac slept, another app grabbed the
+            // camera, a USB camera was replugged), restart the capture session.
+            if connected {
+                cameraQuietSince = nil
+            } else if cameraQuietSince == nil {
+                cameraQuietSince = now
+            } else if let since = cameraQuietSince, now - since > 4, now - lastCameraRestart > 8 {
+                lastCameraRestart = now
+                DispatchQueue.main.async {
+                    guard AVCaptureDevice.authorizationStatus(for: .video) == .authorized else { return }
+                    NSLog("Zoomie Toolz: camera quiet for %.0fs, restarting it", now - since)
+                    self.camera.restart(deviceID: self.selectedCameraID)
+                }
+            }
             let elapsed = now - recordStart
             DispatchQueue.main.async {
                 if self.cameraConnected != connected { self.cameraConnected = connected }
@@ -383,6 +427,17 @@ final class Engine: ObservableObject {
                 if self.isRecording { self.recordingSeconds = elapsed }
             }
         }
+    }
+
+    /// Waits (up to 30 s) for camera frames, records a take, then stops. For testing.
+    func testRecord(seconds: Double, waited: Double = 0) {
+        guard cameraConnected || waited >= 30 else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { self.testRecord(seconds: seconds, waited: waited + 0.5) }
+            return
+        }
+        NSLog("Zoomie Toolz: test recording %.0fs (camera sending: %d, waited %.1fs)", seconds, cameraConnected ? 1 : 0, waited)
+        startRecording()
+        DispatchQueue.main.asyncAfter(deadline: .now() + seconds) { self.stopRecording() }
     }
 
     func toggleBlur() {

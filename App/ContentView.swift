@@ -222,6 +222,8 @@ struct ContentView: View {
 
                 Button("Load Video…") { pickVideo() }
                     .disabled(engine.isRecording)
+                Button { showRecordingsFolder() } label: { Image(systemName: "folder") }
+                    .help("Show your recordings folder in Finder")
             }
 
             Toggle("Auto-play after recording", isOn: $engine.autoPlayAfterRecording)
@@ -249,6 +251,11 @@ struct ContentView: View {
                         }
                         .help(engine.mode == .black ? "Go back to what was showing before (⌃⌥K)"
                                                     : "Show a plain black screen in Zoom (⌃⌥K)")
+                        Button { engine.setMode(.live) } label: {
+                            Label("Live", systemImage: "video.fill")
+                        }
+                        .disabled(engine.mode == .live || engine.isRecording)
+                        .help("Go straight back to your live camera")
                     }
                 }
             }
@@ -367,8 +374,18 @@ struct ContentView: View {
         }
     }
 
+    /// Opens the recordings folder with the last take selected.
+    private func showRecordingsFolder() {
+        if LoopRecorder.hasSavedTake {
+            NSWorkspace.shared.activateFileViewerSelecting([LoopRecorder.defaultURL])
+        } else {
+            NSWorkspace.shared.open(LoopRecorder.directory)
+        }
+    }
+
     private func pickVideo() {
         let panel = NSOpenPanel()
+        panel.directoryURL = LoopRecorder.directory
         panel.allowedContentTypes = [.movie]
         panel.allowsMultipleSelection = false
         if panel.runModal() == .OK, let url = panel.url {

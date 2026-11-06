@@ -40,6 +40,13 @@ struct ZoomieToolzApp: App {
                     hotKeys.register(keyCode: kVK_ANSI_P) { [engine] in engine.playLastRecording() }
                     hotKeys.register(keyCode: kVK_ANSI_V) { [zoomVideo] in zoomVideo.toggle() }
                     // Let the window draw first, then walk through anything that's missing.
+                    // For testing: `open -a "Zoomie Toolz" --args --test-record 4` records a 4-second
+                    // take once the camera is sending video, then stops, and skips the launch popups.
+                    let args = ProcessInfo.processInfo.arguments
+                    if let i = args.firstIndex(of: "--test-record"), i + 1 < args.count, let seconds = Double(args[i + 1]) {
+                        engine.testRecord(seconds: seconds)
+                        return
+                    }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                         LaunchChecks.run(engine: engine, zoomVideo: zoomVideo)
                         updater.checkAtLaunchIfDue()

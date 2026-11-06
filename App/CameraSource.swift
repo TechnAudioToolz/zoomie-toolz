@@ -40,6 +40,13 @@ final class CameraSource: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             .devices.contains { $0.localizedName == SinkFeeder.obsDeviceName }
     }
 
+    /// Full stop and start, for when the session stopped delivering frames
+    /// (e.g. interrupted while the Mac slept) but still reports itself running.
+    func restart(deviceID: String?) {
+        queue.async { [self] in session.stopRunning() }
+        start(deviceID: deviceID)
+    }
+
     func start(deviceID: String?) {
         queue.async { [self] in
             lock.lock(); _latest = nil; lock.unlock()
