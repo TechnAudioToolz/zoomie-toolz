@@ -14,7 +14,6 @@ final class Engine: ObservableObject {
     static let width = 1920
     static let height = 1080
     static let fps = 30.0
-    private static let crossfade = 0.35
 
     @Published private(set) var mode: Mode = .live
     @Published private(set) var isRecording = false
@@ -60,6 +59,14 @@ final class Engine: ObservableObject {
             renderQueue.async { self.renderBlurAmount = amount; self.lastCameraBuffer = nil }
         }
     }
+    /// Fade length when switching modes, in seconds. 0 = hard cut (the default).
+    @Published var fadeDuration = UserDefaults.standard.object(forKey: "fadeDuration") as? Double ?? 0 {
+        didSet {
+            UserDefaults.standard.set(fadeDuration, forKey: "fadeDuration")
+            let fade = fadeDuration
+            renderQueue.async { self.renderFade = fade }
+        }
+    }
     @Published var selectedCameraID: String? = UserDefaults.standard.string(forKey: "cameraID") {
         didSet {
             UserDefaults.standard.set(selectedCameraID, forKey: "cameraID")
@@ -93,6 +100,7 @@ final class Engine: ObservableObject {
     private var still: CIImage?
     private var lastCameraBuffer: CVPixelBuffer?
     private var renderBlur = false
+    private var renderFade = 0.0
     private var renderBlurAmount = 18.0
     private let segmentation: VNGeneratePersonSegmentationRequest = {
         let request = VNGeneratePersonSegmentationRequest()
@@ -116,6 +124,7 @@ final class Engine: ObservableObject {
         CVPixelBufferPoolCreate(kCFAllocatorDefault, nil, attrs as CFDictionary, &pool)
         sink.target = outputTarget
         renderBlur = blurBackground
+        renderFade = fadeDuration
         renderBlurAmount = blurAmount
 
         if LoopRecorder.hasSavedTake {
@@ -324,12 +333,19 @@ final class Engine: ObservableObject {
             return
         }
         guard hasRecording else { return }
-        if player.url != LoopRecorder.defaultURL { loadLoop(LoopRecorder.defaultURL) }
+        if player.url != LoopRecorder.defaultURL {
+            loadLoop(LoopRecorder.defaultURL)
+        } else {
+            // Start the take from its first frame, and don't show a stale frame meanwhile.
+            player.restart()
+            renderQueue.async { self.lastLoop = nil }
+        }
         setMode(.loop)
     }
 
     func loadLoop(_ url: URL) {
         player.load(url)
+        renderQueue.async { self.lastLoop = nil }
         hasLoop = true
         loopName = url == LoopRecorder.defaultURL ? "Recorded loop" : url.lastPathComponent
         if mode == .loop { player.play() }
@@ -347,7 +363,7 @@ final class Engine: ObservableObject {
             let image = renderBlur ? blurringBackground(of: pb) : CIImage(cvPixelBuffer: pb)
             lastLive = aspectFill(image)
         }
-        let inTransition = now - transitionStart < Self.crossfade
+        let inTransition = now - transitionStart < renderFade
         if renderMode == .loop || (inTransition && previousMode == .loop) {
             if let pb = player.currentFrame() {
                 lastLoop = aspectFill(CIImage(cvPixelBuffer: pb))
@@ -367,7 +383,7 @@ final class Engine: ObservableObject {
         }
         let target = frame(for: renderMode)
         let other = frame(for: previousMode)
-        let progress = min(1, (now - transitionStart) / Self.crossfade)
+        let progress = renderFade > 0 ? min(1, (now - transitionStart) / renderFade) : 1
 
         var image: CIImage
         if let target, let other, progress < 1 {
@@ -377,6 +393,10 @@ final class Engine: ObservableObject {
             ])
         } else if let target {
             image = target
+        } else if let other {
+            // The new source has no frame yet (e.g. a loop still loading): hold the
+            // previous picture rather than flash an empty frame, then cut.
+            image = other
         } else {
             image = CIImage(color: CIColor(red: 0.08, green: 0.08, blue: 0.1))
         }

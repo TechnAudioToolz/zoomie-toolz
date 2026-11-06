@@ -12,6 +12,7 @@ final class LoopPlayer {
     private var output: AVPlayerItemVideoOutput?
     private var endObserver: NSObjectProtocol?
     private var lastFrame: CVPixelBuffer?
+    private let lock = NSLock()
 
     private(set) var url: URL?
 
@@ -41,6 +42,13 @@ final class LoopPlayer {
 
     func play() { player?.play() }
 
+    /// Jumps back to the first frame and plays.
+    func restart() {
+        lock.lock(); lastFrame = nil; lock.unlock()
+        player?.seek(to: .zero, toleranceBefore: .zero, toleranceAfter: .zero)
+        player?.play()
+    }
+
     func pause() { player?.pause() }
 
     func stop() {
@@ -49,12 +57,13 @@ final class LoopPlayer {
         endObserver = nil
         player = nil
         output = nil
-        lastFrame = nil
+        lock.lock(); lastFrame = nil; lock.unlock()
         url = nil
     }
 
     /// The frame that should be on screen right now (or the previous one if nothing new).
     func currentFrame() -> CVPixelBuffer? {
+        lock.lock(); defer { lock.unlock() }
         guard let output else { return lastFrame }
         let itemTime = output.itemTime(forHostTime: CACurrentMediaTime())
         if output.hasNewPixelBuffer(forItemTime: itemTime),
