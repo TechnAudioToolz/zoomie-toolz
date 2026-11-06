@@ -59,6 +59,15 @@ final class Engine: ObservableObject {
             renderQueue.async { self.renderBlurAmount = amount; self.lastCameraBuffer = nil }
         }
     }
+    /// Funny face filter on the live camera (googly eyes, big head…).
+    @Published var funnyFace = FunnyFace(rawValue: UserDefaults.standard.string(forKey: "funnyFace") ?? "") ?? .off {
+        didSet {
+            UserDefaults.standard.set(funnyFace.rawValue, forKey: "funnyFace")
+            let filter = funnyFace
+            renderQueue.async { self.renderFunnyFace = filter; self.lastCameraBuffer = nil }
+        }
+    }
+
     /// Fade length when switching modes, in seconds. 0 = hard cut (the default).
     @Published var fadeDuration = UserDefaults.standard.object(forKey: "fadeDuration") as? Double ?? 0 {
         didSet {
@@ -101,6 +110,8 @@ final class Engine: ObservableObject {
     private var lastCameraBuffer: CVPixelBuffer?
     private var renderBlur = false
     private var renderFade = 0.0
+    private var renderFunnyFace: FunnyFace = .off
+    private let faceFilter = FaceFilterRenderer()
     private var renderBlurAmount = 18.0
     private let segmentation: VNGeneratePersonSegmentationRequest = {
         let request = VNGeneratePersonSegmentationRequest()
@@ -125,6 +136,7 @@ final class Engine: ObservableObject {
         sink.target = outputTarget
         renderBlur = blurBackground
         renderFade = fadeDuration
+        renderFunnyFace = funnyFace
         renderBlurAmount = blurAmount
 
         if LoopRecorder.hasSavedTake {
@@ -360,7 +372,8 @@ final class Engine: ObservableObject {
         if let pb = camera.latestFrame, pb !== lastCameraBuffer {
             lastCameraBuffer = pb
             inputFeed.push(pb)
-            let image = renderBlur ? blurringBackground(of: pb) : CIImage(cvPixelBuffer: pb)
+            var image = renderBlur ? blurringBackground(of: pb) : CIImage(cvPixelBuffer: pb)
+            image = faceFilter.apply(renderFunnyFace, to: image, pixelBuffer: pb, time: now)
             lastLive = aspectFill(image)
         }
         let inTransition = now - transitionStart < renderFade
@@ -458,6 +471,12 @@ final class Engine: ObservableObject {
         NSLog("Zoomie Toolz: test recording %.0fs (camera sending: %d, waited %.1fs)", seconds, cameraConnected ? 1 : 0, waited)
         startRecording()
         DispatchQueue.main.asyncAfter(deadline: .now() + seconds) { self.stopRecording() }
+    }
+
+    /// Steps through the funny face filters (Off → Googly Eyes → … → Off).
+    func cycleFunnyFace() {
+        let all = FunnyFace.allCases
+        funnyFace = all[(all.firstIndex(of: funnyFace)! + 1) % all.count]
     }
 
     func toggleBlur() {

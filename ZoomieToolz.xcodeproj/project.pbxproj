@@ -17,6 +17,7 @@
 		3E259FC75F5EA68C365614D2 /* ZoomVideoControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F46AA128151848DA0B1F8B /* ZoomVideoControl.swift */; };
 		49F678F259492389C1E845D9 /* donate.html in Resources */ = {isa = PBXBuildFile; fileRef = 74E3C38CC8A00608E45B2049 /* donate.html */; };
 		57D440E41259EA403C838234 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = A8F960E32AC72F223B0121AF /* AppIcon.icns */; };
+		5AE354CCB2E46A12E63F4B51 /* FaceFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C64B4E691762A3F8A61F46D /* FaceFilters.swift */; };
 		87333976C0FCD4CEA8298A86 /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA5EC72BF480F05FC23F4DFC /* UpdateChecker.swift */; };
 		91383C1613DF19E83949DF98 /* LoopRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2635AA6499FCD40B6B18206 /* LoopRecorder.swift */; };
 		94FA9543048F83A219575394 /* ZoomLeaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C3EC32CB65E3D7F2E4EB007 /* ZoomLeaver.swift */; };
@@ -60,6 +61,7 @@
 		5A1AEDAC7BA50727366B7CBB /* LiveVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideo.swift; sourceTree = "<group>"; };
 		74E3C38CC8A00608E45B2049 /* donate.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = donate.html; sourceTree = "<group>"; };
 		7827ABE91BE6946765E98C01 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		7C64B4E691762A3F8A61F46D /* FaceFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceFilters.swift; sourceTree = "<group>"; };
 		8EF6ECC2B7A146FD0F4B19E8 /* HotKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKeys.swift; sourceTree = "<group>"; };
 		A267F2865C4EB2D604F414E5 /* LaunchChecks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchChecks.swift; sourceTree = "<group>"; };
 		A8F960E32AC72F223B0121AF /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 				198F62D6BEE8E1A9F1EE135C /* ContentView.swift */,
 				AD2DEAECFF16FFE4DA00E27F /* Engine.swift */,
 				AAD22384F7BF7A02BD398445 /* ExtensionInstaller.swift */,
+				7C64B4E691762A3F8A61F46D /* FaceFilters.swift */,
 				8EF6ECC2B7A146FD0F4B19E8 /* HotKeys.swift */,
 				A267F2865C4EB2D604F414E5 /* LaunchChecks.swift */,
 				5A1AEDAC7BA50727366B7CBB /* LiveVideo.swift */,
@@ -244,6 +247,7 @@
 				3CD64469FCBF1CCB81B0C817 /* ContentView.swift in Sources */,
 				261BA6C92B49DB5F382C5621 /* Engine.swift in Sources */,
 				3B7DB1322BE519BC12689C8E /* ExtensionInstaller.swift in Sources */,
+				5AE354CCB2E46A12E63F4B51 /* FaceFilters.swift in Sources */,
 				F428DB668604F777E4772252 /* HotKeys.swift in Sources */,
 				31BC2AD8420C724C1235B720 /* LaunchChecks.swift in Sources */,
 				C68C9C37582A29F28B2E6757 /* LiveVideo.swift in Sources */,
@@ -313,7 +317,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -327,7 +331,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -428,7 +432,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -448,7 +452,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.2.2;
+				MARKETING_VERSION = 1.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

@@ -237,6 +237,17 @@ struct ContentView: View {
             }
 
             HStack(spacing: 10) {
+                Picker("Funny face", selection: $engine.funnyFace) {
+                    ForEach(FunnyFace.allCases) { Text($0.label).tag($0) }
+                }
+                .frame(width: 260)
+                .help("Live face filters that follow your face (⌃⌥F cycles through them)")
+                if engine.funnyFace != .off {
+                    Button("Off") { engine.funnyFace = .off }
+                }
+            }
+
+            HStack(spacing: 10) {
                 Text("Fade between modes")
                 Slider(value: $engine.fadeDuration, in: 0...1, step: 0.05) {
                     Text("Fade")
@@ -281,7 +292,7 @@ struct ContentView: View {
                 .font(.caption).foregroundStyle(.secondary)
             Text(engine.imageName.map { "Image: \($0)" } ?? "No image yet. Choose a picture or freeze the current frame.")
                 .font(.caption).foregroundStyle(.secondary)
-            Text("Hotkeys work anywhere: ⌃⌥L Live/Loop · ⌃⌥I Live/Image · ⌃⌥K black · ⌃⌥B blur · ⌃⌥R record · ⌃⌥P play last recording · ⌃⌥V Zoom video")
+            Text("Hotkeys work anywhere: ⌃⌥L Live/Loop · ⌃⌥I Live/Image · ⌃⌥K black · ⌃⌥F funny face · ⌃⌥B blur · ⌃⌥R record · ⌃⌥P play last recording · ⌃⌥V Zoom video")
                 .font(.caption).foregroundStyle(.secondary)
         }
     }

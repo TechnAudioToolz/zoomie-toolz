@@ -36,6 +36,7 @@ struct ZoomieToolzApp: App {
                     hotKeys.register(keyCode: kVK_ANSI_R) { [engine] in engine.toggleRecording() }
                     hotKeys.register(keyCode: kVK_ANSI_I) { [engine] in engine.toggleImage() }
                     hotKeys.register(keyCode: kVK_ANSI_B) { [engine] in engine.toggleBlur() }
+                    hotKeys.register(keyCode: kVK_ANSI_F) { [engine] in engine.cycleFunnyFace() }
                     hotKeys.register(keyCode: kVK_ANSI_K) { [engine] in engine.toggleBlack() }
                     hotKeys.register(keyCode: kVK_ANSI_P) { [engine] in engine.playLastRecording() }
                     hotKeys.register(keyCode: kVK_ANSI_V) { [zoomVideo] in zoomVideo.toggle() }
@@ -94,6 +95,9 @@ struct ZoomieToolzApp: App {
             Button("Freeze Frame") { engine.freezeFrame() }
             Button(engine.mode == .black ? "Unblack" : "Black Screen") { engine.toggleBlack() }
             Toggle("Blur Background", isOn: Binding(get: { engine.blurBackground }, set: { engine.blurBackground = $0 }))
+            Picker("Funny Face", selection: Binding(get: { engine.funnyFace }, set: { engine.funnyFace = $0 })) {
+                ForEach(FunnyFace.allCases) { Text($0.label).tag($0) }
+            }
             Button(engine.isRecording ? "Stop Recording" : "Record Loop") { engine.toggleRecording() }
             Button("Play Last Recording") { engine.playLastRecording() }
                 .disabled(!engine.hasRecording && !engine.isRecording)
