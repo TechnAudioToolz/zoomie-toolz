@@ -238,7 +238,7 @@ struct ContentView: View {
 
             HStack(spacing: 10) {
                 Picker("Funny face", selection: $engine.funnyFace) {
-                    ForEach(FunnyFace.allCases) { Text($0.label).tag($0) }
+                    FunnyFaceMenuItems()
                 }
                 .frame(width: 260)
                 .help("Live face filters that follow your face (⌃⌥F cycles through them)")

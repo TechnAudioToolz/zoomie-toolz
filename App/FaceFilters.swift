@@ -1,22 +1,97 @@
 import AppKit
 import CoreImage
+import SwiftUI
 import Vision
 
 /// Funny face filters that follow your face, using Vision's on-device face
 /// landmarks. Works on camera frames before they're scaled to the output.
 enum FunnyFace: String, CaseIterable, Identifiable {
-    case off, googlyEyes, bigEyes, tinyFace, bigHead, clownNose, emoji
+    case off
+    // Eyes
+    case googlyEyes, bigEyes, laserEyes, heartEyes, starEyes
+    // Warps
+    case bigHead, tinyFace, alienHead, longFace, wideFace, swirl, wobble
+    // Props
+    case clownNose, mustache, beard, nerdGlasses, sunglasses, pirate, partyHat, crown, halo, devilHorns, bunnyEars, cat
+    // Masks
+    case emoji, clownMask, dogMask, frogMask, alienMask, robotMask, skullMask, monkeyMask
+
     var id: String { rawValue }
+
+    enum Category: String, CaseIterable { case eyes = "Eyes", warps = "Warps", props = "Props", masks = "Masks" }
+
+    var category: Category? {
+        switch self {
+        case .off: return nil
+        case .googlyEyes, .bigEyes, .laserEyes, .heartEyes, .starEyes: return .eyes
+        case .bigHead, .tinyFace, .alienHead, .longFace, .wideFace, .swirl, .wobble: return .warps
+        case .clownNose, .mustache, .beard, .nerdGlasses, .sunglasses, .pirate, .partyHat, .crown, .halo,
+             .devilHorns, .bunnyEars, .cat: return .props
+        case .emoji, .clownMask, .dogMask, .frogMask, .alienMask, .robotMask, .skullMask, .monkeyMask: return .masks
+        }
+    }
 
     var label: String {
         switch self {
         case .off: return "Off"
         case .googlyEyes: return "Googly Eyes"
         case .bigEyes: return "Big Eyes"
-        case .tinyFace: return "Tiny Face"
+        case .laserEyes: return "Laser Eyes"
+        case .heartEyes: return "Heart Eyes"
+        case .starEyes: return "Star Eyes"
         case .bigHead: return "Big Head"
+        case .tinyFace: return "Tiny Face"
+        case .alienHead: return "Alien Head"
+        case .longFace: return "Long Face"
+        case .wideFace: return "Wide Face"
+        case .swirl: return "Swirl"
+        case .wobble: return "Wobble"
         case .clownNose: return "Clown Nose"
-        case .emoji: return "Emoji Face 😎"
+        case .mustache: return "Mustache"
+        case .beard: return "Beard & Mustache"
+        case .nerdGlasses: return "Nerd Glasses"
+        case .sunglasses: return "Sunglasses"
+        case .pirate: return "Pirate Patch"
+        case .partyHat: return "Party Hat"
+        case .crown: return "Crown"
+        case .halo: return "Halo"
+        case .devilHorns: return "Devil Horns"
+        case .bunnyEars: return "Bunny Ears"
+        case .cat: return "Cat"
+        case .emoji: return "😎 Cool"
+        case .clownMask: return "🤡 Clown"
+        case .dogMask: return "🐶 Dog"
+        case .frogMask: return "🐸 Frog"
+        case .alienMask: return "👽 Alien"
+        case .robotMask: return "🤖 Robot"
+        case .skullMask: return "💀 Skull"
+        case .monkeyMask: return "🐵 Monkey"
+        }
+    }
+
+    var maskEmoji: String? {
+        switch self {
+        case .emoji: return "😎"
+        case .clownMask: return "🤡"
+        case .dogMask: return "🐶"
+        case .frogMask: return "🐸"
+        case .alienMask: return "👽"
+        case .robotMask: return "🤖"
+        case .skullMask: return "💀"
+        case .monkeyMask: return "🐵"
+        default: return nil
+        }
+    }
+}
+
+/// Menu items for a Funny Face picker: Off, then each category as a section.
+struct FunnyFaceMenuItems: View {
+    var body: some View {
+        Text(FunnyFace.off.label).tag(FunnyFace.off)
+        ForEach(FunnyFace.Category.allCases, id: \.self) { category in
+            Section(category.rawValue) {
+                ForEach(FunnyFace.allCases.filter { $0.category == category }) { Text($0.label).tag($0) }
+            }
         }
     }
 }
@@ -39,9 +114,26 @@ final class FaceFilterRenderer {
         var leftEye: CGPoint, rightEye: CGPoint
         var eyeSize: CGFloat
         var nose: CGPoint
+        var mouth: CGPoint
         var center: CGPoint
         var size: CGFloat
         var roll: CGFloat
+
+        /// Midpoint between the eyes: the origin for props.
+        var eyeMid: CGPoint { CGPoint(x: (leftEye.x + rightEye.x) / 2, y: (leftEye.y + rightEye.y) / 2) }
+        /// Distance between the eyes: the unit props are drawn in.
+        var eyeDistance: CGFloat { max(hypot(leftEye.x - rightEye.x, leftEye.y - rightEye.y), 1) }
+        /// Head tilt, from the line through the eyes (left-to-right on screen).
+        var tilt: CGFloat {
+            let (a, b) = leftEye.x < rightEye.x ? (leftEye, rightEye) : (rightEye, leftEye)
+            return atan2(b.y - a.y, b.x - a.x)
+        }
+        /// A point on the face given in eye units (x along the eye line, y up the face).
+        func point(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
+            let d = eyeDistance, t = tilt
+            return CGPoint(x: eyeMid.x + (x * cos(t) - y * sin(t)) * d,
+                           y: eyeMid.y + (x * sin(t) + y * cos(t)) * d)
+        }
     }
 
     // Shared with the detect queue, under `lock`.
@@ -61,7 +153,6 @@ final class FaceFilterRenderer {
     private var lastEyes: [CGPoint]?
     private var lastTime: CFTimeInterval?
 
-    private lazy var emojiImage: CIImage? = Self.renderEmoji("😎")
 
     func apply(_ filter: FunnyFace, to image: CIImage, pixelBuffer: CVPixelBuffer, time: CFTimeInterval) -> CIImage {
         guard filter != .off else {
@@ -72,9 +163,20 @@ final class FaceFilterRenderer {
         updateFace()
         guard let face else { return image }
 
+        let extent = image.extent
+        let d = face.eyeDistance
+
+        if let prop = FaceProps.image(for: filter) {
+            return place(prop, on: face).composited(over: image)
+        }
+        if let emoji = filter.maskEmoji {
+            guard let mask = Self.emojiImage(emoji) else { return image }
+            return place(mask, centeredAt: face.point(0, -0.5), width: d * 3.3, face: face).composited(over: image)
+        }
+
         switch filter {
-        case .off:
-            return image
+        case .googlyEyes:
+            return googlyEyes(on: image, face: face, time: time)
         case .bigEyes:
             var out = image
             for eye in [face.leftEye, face.rightEye] {
@@ -84,39 +186,120 @@ final class FaceFilterRenderer {
                     kCIInputScaleKey: 0.75,
                 ])
             }
-            return out.cropped(to: image.extent)
+            return out.cropped(to: extent)
+        case .laserEyes:
+            var out = image
+            for eye in [face.leftEye, face.rightEye] {
+                // Wide red glow, then a hot white core, slightly flickering.
+                let flicker = 1 + 0.08 * sin(CGFloat(time) * 31 + eye.x)
+                out = Self.glow(at: eye, radius: d * 0.9 * flicker, color: CIColor(red: 1, green: 0.05, blue: 0.05, alpha: 0.85)).composited(over: out)
+                out = Self.glow(at: eye, radius: d * 0.32 * flicker, color: CIColor(red: 1, green: 0.85, blue: 0.8, alpha: 1)).composited(over: out)
+            }
+            return out.cropped(to: extent)
+        case .heartEyes, .starEyes:
+            guard let symbol = Self.emojiImage(filter == .heartEyes ? "❤️" : "⭐️") else { return image }
+            let pulse = 1 + 0.08 * sin(CGFloat(time) * 6)
+            var out = image
+            for eye in [face.leftEye, face.rightEye] {
+                out = place(symbol, centeredAt: eye, width: d * 0.85 * pulse, face: face).composited(over: out)
+            }
+            return out
         case .tinyFace:
             return image.applyingFilter("CIPinchDistortion", parameters: [
                 kCIInputCenterKey: CIVector(cgPoint: face.center),
                 kCIInputRadiusKey: face.size * 0.85,
                 kCIInputScaleKey: 0.7,
-            ]).cropped(to: image.extent)
+            ]).cropped(to: extent)
         case .bigHead:
             // Centered between the eyes and forehead, wide enough to inflate the whole head.
-            let mid = CGPoint(x: (face.leftEye.x + face.rightEye.x) / 2,
-                              y: (face.leftEye.y + face.rightEye.y) / 2 + face.size * 0.05)
             return image.applyingFilter("CIBumpDistortion", parameters: [
-                kCIInputCenterKey: CIVector(cgPoint: mid),
+                kCIInputCenterKey: CIVector(cgPoint: face.point(0, 0.25)),
                 kCIInputRadiusKey: face.size * 1.3,
                 kCIInputScaleKey: 0.65,
-            ]).cropped(to: image.extent)
+            ]).cropped(to: extent)
+        case .alienHead:
+            // Swollen forehead, shrunken chin.
+            return image
+                .applyingFilter("CIBumpDistortion", parameters: [
+                    kCIInputCenterKey: CIVector(cgPoint: face.point(0, 1.1)),
+                    kCIInputRadiusKey: d * 2.1,
+                    kCIInputScaleKey: 0.9,
+                ])
+                .applyingFilter("CIPinchDistortion", parameters: [
+                    kCIInputCenterKey: CIVector(cgPoint: face.point(0, -1.4)),
+                    kCIInputRadiusKey: d * 1.3,
+                    kCIInputScaleKey: 0.6,
+                ]).cropped(to: extent)
+        case .longFace:
+            return stretched(image, face: face, sx: 1, sy: 1.5)
+        case .wideFace:
+            return stretched(image, face: face, sx: 1.55, sy: 1)
+        case .swirl:
+            return image.applyingFilter("CITwirlDistortion", parameters: [
+                kCIInputCenterKey: CIVector(cgPoint: face.center),
+                kCIInputRadiusKey: face.size * 0.75,
+                kCIInputAngleKey: 2.6,
+            ]).cropped(to: extent)
+        case .wobble:
+            // The head swells and shrinks a few times a second.
+            let amount = 0.55 * sin(time * 5.5)
+            return image.applyingFilter(amount >= 0 ? "CIBumpDistortion" : "CIPinchDistortion", parameters: [
+                kCIInputCenterKey: CIVector(cgPoint: face.center),
+                kCIInputRadiusKey: face.size * 1.05,
+                kCIInputScaleKey: abs(amount),
+            ]).cropped(to: extent)
         case .clownNose:
-            let r = face.size * 0.11
-            return Self.ball(at: face.nose, radius: r, color: CIColor(red: 0.9, green: 0.05, blue: 0.08))
+            return Self.ball(at: face.nose, radius: face.size * 0.11, color: CIColor(red: 0.9, green: 0.05, blue: 0.08))
                 .composited(over: image)
-        case .googlyEyes:
-            return googlyEyes(on: image, face: face, time: time)
-        case .emoji:
-            guard let emoji = emojiImage else { return image }
-            let side = face.size * 1.55
-            let scale = side / emoji.extent.width
-            let placed = emoji
-                .transformed(by: CGAffineTransform(translationX: -emoji.extent.midX, y: -emoji.extent.midY))
-                .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
-                .transformed(by: CGAffineTransform(rotationAngle: face.roll))
-                .transformed(by: CGAffineTransform(translationX: face.center.x, y: face.center.y + face.size * 0.05))
-            return placed.composited(over: image)
+        default:
+            return image
         }
+    }
+
+    // MARK: Placing artwork on the face
+
+    /// Puts a prop (drawn in eye units by FaceProps) onto the face.
+    private func place(_ prop: CIImage, on face: Face) -> CIImage {
+        let origin = FaceProps.originInImage
+        let scale = face.eyeDistance / FaceProps.pixelsPerUnit
+        return prop
+            .transformed(by: CGAffineTransform(translationX: -origin.x, y: -origin.y))
+            .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+            .transformed(by: CGAffineTransform(rotationAngle: face.tilt))
+            .transformed(by: CGAffineTransform(translationX: face.eyeMid.x, y: face.eyeMid.y))
+    }
+
+    /// Puts an image of the given width centered on a point, tilted with the head.
+    private func place(_ art: CIImage, centeredAt point: CGPoint, width: CGFloat, face: Face) -> CIImage {
+        let scale = width / art.extent.width
+        return art
+            .transformed(by: CGAffineTransform(translationX: -art.extent.midX, y: -art.extent.midY))
+            .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+            .transformed(by: CGAffineTransform(rotationAngle: face.tilt))
+            .transformed(by: CGAffineTransform(translationX: point.x, y: point.y))
+    }
+
+    /// Stretches the face area and blends it back in with a soft oval edge.
+    private func stretched(_ image: CIImage, face: Face, sx: CGFloat, sy: CGFloat) -> CIImage {
+        let c = face.center
+        let big = image
+            .transformed(by: CGAffineTransform(translationX: -c.x, y: -c.y))
+            .transformed(by: CGAffineTransform(scaleX: sx, y: sy))
+            .transformed(by: CGAffineTransform(translationX: c.x, y: c.y))
+        let r = face.size * 0.75
+        let mask = CIFilter(name: "CIRadialGradient", parameters: [
+            kCIInputCenterKey: CIVector(cgPoint: .zero),
+            "inputRadius0": r * 0.7,
+            "inputRadius1": r,
+            "inputColor0": CIColor.white,
+            "inputColor1": CIColor.black,
+        ])!.outputImage!
+            .transformed(by: CGAffineTransform(scaleX: sx, y: sy))
+            .transformed(by: CGAffineTransform(translationX: c.x, y: c.y))
+        return big.applyingFilter("CIBlendWithMask", parameters: [
+            kCIInputBackgroundImageKey: image,
+            kCIInputMaskImageKey: mask,
+        ]).cropped(to: image.extent)
     }
 
     // MARK: Tracking
@@ -162,7 +345,7 @@ final class FaceFilterRenderer {
         func mix(_ p: CGFloat, _ q: CGFloat) -> CGFloat { p + (q - p) * a }
         face = Face(leftEye: mix(old.leftEye, new.leftEye), rightEye: mix(old.rightEye, new.rightEye),
                     eyeSize: mix(old.eyeSize, new.eyeSize), nose: mix(old.nose, new.nose),
-                    center: mix(old.center, new.center), size: mix(old.size, new.size),
+                    mouth: mix(old.mouth, new.mouth), center: mix(old.center, new.center), size: mix(old.size, new.size),
                     roll: mix(old.roll, new.roll))
     }
 
@@ -192,9 +375,11 @@ final class FaceFilterRenderer {
         let box = observation.boundingBox
         let rect = CGRect(x: box.minX * imageSize.width, y: box.minY * imageSize.height,
                           width: box.width * imageSize.width, height: box.height * imageSize.height)
+        let mouth = landmarks.outerLips.map { centroid(points($0)) }
+            ?? CGPoint(x: nose.x, y: nose.y - rect.height * 0.15)
         return Face(leftEye: centroid(left), rightEye: centroid(right),
                     eyeSize: max(eyeWidth, rect.width * 0.12),
-                    nose: nose, center: CGPoint(x: rect.midX, y: rect.midY),
+                    nose: nose, mouth: mouth, center: CGPoint(x: rect.midX, y: rect.midY),
                     size: max(rect.width, rect.height),
                     roll: CGFloat(observation.roll?.doubleValue ?? 0))
     }
@@ -269,6 +454,28 @@ final class FaceFilterRenderer {
             "inputColor1": CIColor(red: 1, green: 1, blue: 1, alpha: 0),
         ])!.outputImage!.cropped(to: disc.extent)
         return highlight.composited(over: disc)
+    }
+
+    private static var emojiCache: [String: CIImage] = [:]
+    private static let emojiLock = NSLock()
+
+    static func emojiImage(_ emoji: String) -> CIImage? {
+        emojiLock.lock(); defer { emojiLock.unlock() }
+        if let cached = emojiCache[emoji] { return cached }
+        let image = renderEmoji(emoji)
+        emojiCache[emoji] = image
+        return image
+    }
+
+    /// A soft glowing dot (laser eyes).
+    static func glow(at center: CGPoint, radius: CGFloat, color: CIColor) -> CIImage {
+        CIFilter(name: "CIRadialGradient", parameters: [
+            kCIInputCenterKey: CIVector(cgPoint: center),
+            "inputRadius0": radius * 0.15,
+            "inputRadius1": radius,
+            "inputColor0": color,
+            "inputColor1": CIColor(red: color.red, green: color.green, blue: color.blue, alpha: 0),
+        ])!.outputImage!.cropped(to: CGRect(x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2))
     }
 
     /// Color emoji, drawn once with Core Text into a bitmap.

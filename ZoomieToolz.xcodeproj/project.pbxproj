@@ -15,6 +15,7 @@
 		3B7DB1322BE519BC12689C8E /* ExtensionInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAD22384F7BF7A02BD398445 /* ExtensionInstaller.swift */; };
 		3CD64469FCBF1CCB81B0C817 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 198F62D6BEE8E1A9F1EE135C /* ContentView.swift */; };
 		3E259FC75F5EA68C365614D2 /* ZoomVideoControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F46AA128151848DA0B1F8B /* ZoomVideoControl.swift */; };
+		3E4AFF0CFF5CB060827076CA /* FaceProps.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F6EEABCCD9D1BBB8D68989 /* FaceProps.swift */; };
 		49F678F259492389C1E845D9 /* donate.html in Resources */ = {isa = PBXBuildFile; fileRef = 74E3C38CC8A00608E45B2049 /* donate.html */; };
 		57D440E41259EA403C838234 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = A8F960E32AC72F223B0121AF /* AppIcon.icns */; };
 		5AE354CCB2E46A12E63F4B51 /* FaceFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C64B4E691762A3F8A61F46D /* FaceFilters.swift */; };
@@ -75,6 +76,7 @@
 		EA5EC72BF480F05FC23F4DFC /* UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateChecker.swift; sourceTree = "<group>"; };
 		F5B47F24976A358CA766CD94 /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
 		F77A16D8001F1E0A1DCDEA58 /* SinkFeeder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SinkFeeder.swift; sourceTree = "<group>"; };
+		F7F6EEABCCD9D1BBB8D68989 /* FaceProps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceProps.swift; sourceTree = "<group>"; };
 		F9F46AA128151848DA0B1F8B /* ZoomVideoControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomVideoControl.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -87,6 +89,7 @@
 				AD2DEAECFF16FFE4DA00E27F /* Engine.swift */,
 				AAD22384F7BF7A02BD398445 /* ExtensionInstaller.swift */,
 				7C64B4E691762A3F8A61F46D /* FaceFilters.swift */,
+				F7F6EEABCCD9D1BBB8D68989 /* FaceProps.swift */,
 				8EF6ECC2B7A146FD0F4B19E8 /* HotKeys.swift */,
 				A267F2865C4EB2D604F414E5 /* LaunchChecks.swift */,
 				5A1AEDAC7BA50727366B7CBB /* LiveVideo.swift */,
@@ -248,6 +251,7 @@
 				261BA6C92B49DB5F382C5621 /* Engine.swift in Sources */,
 				3B7DB1322BE519BC12689C8E /* ExtensionInstaller.swift in Sources */,
 				5AE354CCB2E46A12E63F4B51 /* FaceFilters.swift in Sources */,
+				3E4AFF0CFF5CB060827076CA /* FaceProps.swift in Sources */,
 				F428DB668604F777E4772252 /* HotKeys.swift in Sources */,
 				31BC2AD8420C724C1235B720 /* LaunchChecks.swift in Sources */,
 				C68C9C37582A29F28B2E6757 /* LiveVideo.swift in Sources */,

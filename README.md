@@ -35,7 +35,11 @@ Zoomie Toolz checks all of this every time it opens and shows a popup explaining
 - **Image:** show a still instead of live video (`⌃⌥I`). **Choose Image…** picks any picture and **Freeze Frame** grabs what your camera shows right now. Click the picture thumbnail to choose another.
 - **Black** (`⌃⌥K`): a plain black screen, like having your camera off while your Zoom video stays on. Press it again (**Unblack**) to go back to whatever was showing before, or press **Live** next to it to go straight to your camera.
 - **Blur background** (`⌃⌥B`): keeps you sharp and blurs everything behind you, with a strength slider. Uses Apple's on-device person detection. Loops recorded and frames frozen with blur on are blurred too.
-- **Funny Face** (`⌃⌥F` cycles): live filters that follow your face: **Googly Eyes** (with wobbly physics), **Big Eyes**, **Tiny Face**, **Big Head**, **Clown Nose** and **Emoji Face** 😎. Uses Apple's on-device face detection; works with blur, and shows up in recorded loops and frozen frames.
+- **Funny Face** (`⌃⌥F` cycles): 32 live filters that follow your face and tilt with your head, using Apple's on-device face detection. They work with blur and show up in recorded loops and frozen frames.
+  - **Eyes:** Googly Eyes (with wobbly physics), Big Eyes, Laser Eyes, Heart Eyes, Star Eyes
+  - **Warps:** Big Head, Tiny Face, Alien Head, Long Face, Wide Face, Swirl, Wobble
+  - **Props:** Clown Nose, Mustache, Beard & Mustache, Nerd Glasses, Sunglasses, Pirate Patch, Party Hat, Crown, Halo, Devil Horns, Bunny Ears, Cat
+  - **Masks:** 😎 Cool, 🤡 Clown, 🐶 Dog, 🐸 Frog, 👽 Alien, 🤖 Robot, 💀 Skull, 🐵 Monkey
 - **Start/Stop Zoom Video** (`⌃⌥V`): presses Zoom's own Start/Stop Video for you and shows whether your video is on. Optional: it's the only feature that needs Accessibility permission, and it asks the first time you use it (never at launch).
 - **Leave Zoom automatically:** force-quits Zoom at a set time, or in 15/30/60 minutes, which drops you straight out of the meeting (no "leave meeting?" prompt, no special permissions). The time is filled in with the next top of the hour when the app opens (open at 6:01 pm → 7:00 pm). **Leave Now** does it straight away.
 - **Cuts or fades:** switching between Live, Loop, Image and Black is a hard cut by default. The **Fade between modes** slider adds a fade of up to 1 second. Play Last Recording always starts the loop from its first frame.
@@ -95,7 +99,8 @@ OBS's camera extension and Zoomie Cam both have a "sink" stream that accepts fra
 | `App/ZoomVideoControl.swift` | Reads and presses Zoom's Start/Stop Video menu item (Accessibility) |
 | `App/ZoomLeaver.swift` | Scheduled Zoom quit |
 | `App/UpdateChecker.swift` | Checks GitHub's latest release and offers the download |
-| `App/FaceFilters.swift` | Funny face filters: face tracking (Vision landmarks, on its own thread) and drawing |
+| `App/FaceFilters.swift` | Funny face filters: face tracking (Vision landmarks, on its own thread), eye effects, warps and masks |
+| `App/FaceProps.swift` | The props (hats, glasses, ears…), drawn in code in "eye units" so they scale and tilt with the face |
 | `App/LaunchChecks.swift` | Setup checks and popups at launch |
 | `App/HotKeys.swift` | Global hotkeys (no Accessibility needed) |
 | `App/ExtensionInstaller.swift`, `Extension/` | The optional Zoomie Cam camera extension |
