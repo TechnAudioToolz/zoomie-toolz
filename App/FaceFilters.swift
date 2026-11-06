@@ -171,7 +171,9 @@ final class FaceFilterRenderer {
         }
         if let emoji = filter.maskEmoji {
             guard let mask = Self.emojiImage(emoji) else { return image }
-            return place(mask, centeredAt: face.point(0, -0.5), width: d * 3.3, face: face).composited(over: image)
+            // Big enough to hide the whole head (hair and ears too), not just the face.
+            // The emoji's visible circle is about 80% of its image, hence the generous width.
+            return place(mask, centeredAt: face.point(0, -0.1), width: d * 5.4, face: face).composited(over: image)
         }
 
         switch filter {

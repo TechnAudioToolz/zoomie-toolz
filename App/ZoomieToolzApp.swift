@@ -48,6 +48,11 @@ struct ZoomieToolzApp: App {
                         engine.testRecord(seconds: seconds)
                         return
                     }
+                    // `--test-filters` saves one live output frame per funny face filter.
+                    if args.contains("--test-filters") {
+                        engine.testFilters()
+                        return
+                    }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                         LaunchChecks.run(engine: engine, zoomVideo: zoomVideo)
                         updater.checkAtLaunchIfDue()

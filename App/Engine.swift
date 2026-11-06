@@ -122,6 +122,8 @@ final class Engine: ObservableObject {
     private let sequenceHandler = VNSequenceRequestHandler()
     private var recordStart: CFTimeInterval = 0
     private var tickCount = 0
+    /// Set (on the render queue) to save the next output frame as a PNG. For testing.
+    private var snapshotURL: URL?
     private var cameraQuietSince: CFTimeInterval?
     private var lastCameraRestart: CFTimeInterval = 0
 
@@ -423,6 +425,11 @@ final class Engine: ObservableObject {
 
         sink.send(out)
         outputFeed.push(out)
+        if let url = snapshotURL {
+            snapshotURL = nil
+            try? ciContext.writePNGRepresentation(of: CIImage(cvPixelBuffer: out), to: url, format: .RGBA8,
+                                                  colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!)
+        }
 
         if recorder.isRecording {
             let receiving = camera.isReceivingFrames
@@ -477,6 +484,34 @@ final class Engine: ObservableObject {
     func cycleFunnyFace() {
         let all = FunnyFace.allCases
         funnyFace = all[(all.firstIndex(of: funnyFace)! + 1) % all.count]
+    }
+
+    /// Steps through every funny face filter on the live camera, saving one output
+    /// frame per filter into Application Support/Zoomie Toolz/filter-test. For testing.
+    func testFilters(waited: Double = 0) {
+        guard cameraConnected || waited >= 30 else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { self.testFilters(waited: waited + 0.5) }
+            return
+        }
+        let dir = LoopRecorder.directory.appendingPathComponent("filter-test", isDirectory: true)
+        try? FileManager.default.removeItem(at: dir)
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        setMode(.live)
+        let filters = FunnyFace.allCases
+        NSLog("Zoomie Toolz: testing %d filters", filters.count)
+        for (i, filter) in filters.enumerated() {
+            let start = 1.0 + Double(i) * 1.3
+            DispatchQueue.main.asyncAfter(deadline: .now() + start) { self.funnyFace = filter }
+            // Give tracking a moment to settle before grabbing the frame.
+            DispatchQueue.main.asyncAfter(deadline: .now() + start + 1.1) {
+                let url = dir.appendingPathComponent(String(format: "%02d-%@.png", i, filter.rawValue))
+                self.renderQueue.async { self.snapshotURL = url }
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 + Double(filters.count) * 1.3 + 0.5) {
+            self.funnyFace = .off
+            NSLog("Zoomie Toolz: filter test done, frames in %@", dir.path)
+        }
     }
 
     func toggleBlur() {
