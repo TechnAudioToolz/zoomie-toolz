@@ -27,6 +27,8 @@ struct ContentView: View {
                     zoomVideoBar
                     cameraSection
                     Divider()
+                    lagSection
+                    Divider()
                     leaveSection
                     Divider()
                     setupSection
@@ -131,6 +133,77 @@ struct ContentView: View {
     }
 
     /// Thumbnail of the current picture; click to choose another.
+    /// Bad Connection: pixelation plus a dropped frame rate on the output.
+    private var lagSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 10) {
+                Text("Bad connection").font(.headline)
+                Button {
+                    engine.toggleLag()
+                } label: {
+                    Label(engine.lagEnabled ? "Disable Lag" : "Enable Lag",
+                          systemImage: engine.lagEnabled ? "wifi.slash" : "wifi.exclamationmark")
+                        .frame(minWidth: 110)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(engine.lagEnabled ? .orange : .gray)
+                .help("Pixelates the output and drops its frame rate, like a bad connection (⌃⌥G)")
+                Button { engine.goLive() } label: { Label("Live", systemImage: "video.fill") }
+                    .disabled(!engine.lagEnabled && engine.mode == .live)
+                    .help("Back to a clean live camera: lag off, Live mode")
+                Spacer()
+            }
+            HStack(spacing: 16) {
+                Slider(value: $engine.lagPixelation, in: 1...48) {
+                    Text("Pixelation")
+                } minimumValueLabel: {
+                    Text("Sharp").font(.caption)
+                } maximumValueLabel: {
+                    Text("Blocky").font(.caption)
+                }
+                .frame(width: 300)
+                Text(engine.lagPixelation < 1.5 ? "Off" : "\(Int(engine.lagPixelation.rounded())) px blocks")
+                    .font(.caption).foregroundStyle(.secondary)
+                    .frame(width: 80, alignment: .leading)
+            }
+            .disabled(!engine.lagEnabled)
+            HStack(spacing: 16) {
+                // Spaced logarithmically so 0.25, 0.5, 1 and 2 fps aren't crammed into a sliver.
+                Slider(value: lagFPSPosition, in: 0...1) {
+                    Text("Frame rate")
+                } minimumValueLabel: {
+                    Text("0.25").font(.caption)
+                } maximumValueLabel: {
+                    Text("30").font(.caption)
+                }
+                .frame(width: 300)
+                Text(Self.describeFPS(engine.lagFPS))
+                    .font(.caption).foregroundStyle(.secondary)
+                    .frame(width: 160, alignment: .leading)
+            }
+            .disabled(!engine.lagEnabled)
+        }
+    }
+
+    /// Slider position 0…1 ↔ 0.25…30 fps on a log scale, snapped to tidy values.
+    private var lagFPSPosition: Binding<Double> {
+        let range = Engine.lagFPSRange
+        let ratio = range.upperBound / range.lowerBound
+        return Binding(
+            get: { log(engine.lagFPS / range.lowerBound) / log(ratio) },
+            set: { position in
+                let raw = range.lowerBound * pow(ratio, position)
+                let snapped = raw < 1 ? (raw * 4).rounded() / 4 : raw < 10 ? (raw * 2).rounded() / 2 : raw.rounded()
+                engine.lagFPS = min(max(snapped, range.lowerBound), range.upperBound)
+            })
+    }
+
+    static func describeFPS(_ fps: Double) -> String {
+        if fps >= Engine.fps - 0.01 { return "30 fps (full speed)" }
+        if fps < 1 { return String(format: "%g fps (1 frame every %g s)", fps, (1 / fps * 100).rounded() / 100) }
+        return String(format: "%g fps", fps)
+    }
+
     private var picturePreview: some View {
         ZStack {
             Color.black
@@ -291,7 +364,7 @@ struct ContentView: View {
                 .font(.caption).foregroundStyle(.secondary)
             Text(engine.imageName.map { "Image: \($0)" } ?? "No image yet. Choose a picture or freeze the current frame.")
                 .font(.caption).foregroundStyle(.secondary)
-            Text("Hotkeys work anywhere: ⌃⌥L Live/Loop · ⌃⌥I Live/Image · ⌃⌥K black · ⌃⌥F funny face · ⌃⌥B blur · ⌃⌥R record · ⌃⌥P play last recording · ⌃⌥V Zoom video")
+            Text("Hotkeys work anywhere: ⌃⌥L Live/Loop · ⌃⌥I Live/Image · ⌃⌥K black · ⌃⌥F funny face · ⌃⌥G lag · ⌃⌥B blur · ⌃⌥R record · ⌃⌥P play last recording · ⌃⌥V Zoom video")
                 .font(.caption).foregroundStyle(.secondary)
         }
     }

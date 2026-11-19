@@ -40,6 +40,7 @@ Zoomie Toolz checks all of this every time it opens and shows a popup explaining
   - **Warps:** Big Head, Tiny Face, Alien Head, Long Face, Wide Face, Swirl, Wobble
   - **Props:** Clown Nose, Mustache, Beard & Mustache, Nerd Glasses, Sunglasses, Pirate Patch, Party Hat, Crown, Halo, Devil Horns, Bunny Ears, Cat
   - **Masks:** 😎 Cool, 🤡 Clown, 🐶 Dog, 🐸 Frog, 👽 Alien, 🤖 Robot, 💀 Skull, 🐵 Monkey
+- **Bad Connection** (`⌃⌥G`): fake a laggy call. **Enable Lag** pixelates the output (from crisp to big blocks) and drops its frame rate anywhere from full 30 fps down to 0.25 fps (one frame every 4 seconds), holding each frame like a frozen video. **Live** gets you straight back to a clean live camera. Works on top of everything else; your Input preview stays clean.
 - **Start/Stop Zoom Video** (`⌃⌥V`): presses Zoom's own Start/Stop Video for you and shows whether your video is on. Optional: it's the only feature that needs Accessibility permission, and it asks the first time you use it (never at launch).
 - **Leave Zoom automatically:** force-quits Zoom at a set time, or in 15/30/60 minutes, which drops you straight out of the meeting (no "leave meeting?" prompt, no special permissions). The time is filled in with the next top of the hour when the app opens (open at 6:01 pm → 7:00 pm). **Leave Now** does it straight away.
 - **Cuts or fades:** switching between Live, Loop, Image and Black is a hard cut by default. The **Fade between modes** slider adds a fade of up to 1 second. Play Last Recording always starts the loop from its first frame.

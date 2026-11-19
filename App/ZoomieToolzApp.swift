@@ -44,6 +44,7 @@ struct ZoomieToolzApp: App {
                     hotKeys.register(keyCode: kVK_ANSI_I) { [engine] in engine.toggleImage() }
                     hotKeys.register(keyCode: kVK_ANSI_B) { [engine] in engine.toggleBlur() }
                     hotKeys.register(keyCode: kVK_ANSI_F) { [engine] in engine.cycleFunnyFace() }
+                    hotKeys.register(keyCode: kVK_ANSI_G) { [engine] in engine.toggleLag() }
                     hotKeys.register(keyCode: kVK_ANSI_K) { [engine] in engine.toggleBlack() }
                     hotKeys.register(keyCode: kVK_ANSI_P) { [engine] in engine.playLastRecording() }
                     hotKeys.register(keyCode: kVK_ANSI_V) { [zoomVideo] in zoomVideo.toggle() }
@@ -111,6 +112,8 @@ struct ZoomieToolzApp: App {
             Button("Freeze Frame") { engine.freezeFrame() }
             Button(engine.mode == .black ? "Unblack" : "Black Screen") { engine.toggleBlack() }
             Toggle("Blur Background", isOn: Binding(get: { engine.blurBackground }, set: { engine.blurBackground = $0 }))
+            Toggle("Bad Connection (Lag)", isOn: Binding(get: { engine.lagEnabled }, set: { engine.lagEnabled = $0 }))
+            Button("Go Live (No Lag)") { engine.goLive() }
             Picker("Funny Face", selection: Binding(get: { engine.funnyFace }, set: { engine.funnyFace = $0 })) {
                 FunnyFaceMenuItems()
             }

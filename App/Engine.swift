@@ -68,6 +68,40 @@ final class Engine: ObservableObject {
         }
     }
 
+    // MARK: Bad connection (artificial lag)
+
+    /// Pixelates the output and drops its frame rate, like a bad video connection.
+    @Published var lagEnabled = UserDefaults.standard.bool(forKey: "lagEnabled") {
+        didSet { UserDefaults.standard.set(lagEnabled, forKey: "lagEnabled"); syncLag() }
+    }
+    /// Pixel block size, 1 (sharp) to 48 (huge blocks).
+    @Published var lagPixelation = UserDefaults.standard.object(forKey: "lagPixelation") as? Double ?? 12 {
+        didSet { UserDefaults.standard.set(lagPixelation, forKey: "lagPixelation"); syncLag() }
+    }
+    /// Output frames per second while lagging, 0.25 to 30.
+    @Published var lagFPS = UserDefaults.standard.object(forKey: "lagFPS") as? Double ?? 2 {
+        didSet { UserDefaults.standard.set(lagFPS, forKey: "lagFPS"); syncLag() }
+    }
+    static let lagFPSRange: ClosedRange<Double> = 0.25...fps
+
+    private func syncLag() {
+        let on = lagEnabled, pixel = lagPixelation, rate = lagFPS
+        renderQueue.async {
+            self.renderLag = on
+            self.renderLagPixelation = pixel
+            self.renderLagFPS = rate
+            self.heldFrame = nil  // show the change now, not after a long held frame
+        }
+    }
+
+    func toggleLag() { lagEnabled.toggle() }
+
+    /// Straight back to a clean live camera: lag off, Live mode.
+    func goLive() {
+        lagEnabled = false
+        setMode(.live)
+    }
+
     /// Fade length when switching modes, in seconds. 0 = hard cut (the default).
     @Published var fadeDuration = UserDefaults.standard.object(forKey: "fadeDuration") as? Double ?? 0 {
         didSet {
@@ -111,6 +145,12 @@ final class Engine: ObservableObject {
     private var renderBlur = false
     private var renderFade = 0.0
     private var renderFunnyFace: FunnyFace = .off
+    private var renderLag = false
+    private var renderLagPixelation = 12.0
+    private var renderLagFPS = 2.0
+    /// While lagging, the frame being held on screen and when it was taken.
+    private var heldFrame: CVPixelBuffer?
+    private var heldAt: CFTimeInterval = 0
     private let faceFilter = FaceFilterRenderer()
     private var renderBlurAmount = 18.0
     private let segmentation: VNGeneratePersonSegmentationRequest = {
@@ -139,6 +179,9 @@ final class Engine: ObservableObject {
         renderBlur = blurBackground
         renderFade = fadeDuration
         renderFunnyFace = funnyFace
+        renderLag = lagEnabled
+        renderLagPixelation = lagPixelation
+        renderLagFPS = lagFPS
         renderBlurAmount = blurAmount
 
         if LoopRecorder.hasSavedTake {
@@ -439,11 +482,32 @@ final class Engine: ObservableObject {
         }
         image = image.cropped(to: CGRect(x: 0, y: 0, width: Self.width, height: Self.height))
 
-        guard let pool else { return }
-        var out: CVPixelBuffer?
-        CVPixelBufferPoolCreatePixelBuffer(kCFAllocatorDefault, pool, &out)
-        guard let out else { return }
-        ciContext.render(image, to: out)
+        let out: CVPixelBuffer
+        if renderLag, let held = heldFrame, now - heldAt < 1 / max(renderLagFPS, 0.01) {
+            // Bad connection: keep showing the last frame until the next one is due.
+            out = held
+        } else {
+            if renderLag && renderLagPixelation > 1.5 {
+                image = image
+                    .applyingFilter("CIPixellate", parameters: [
+                        kCIInputCenterKey: CIVector(x: 0, y: 0),
+                        kCIInputScaleKey: renderLagPixelation,
+                    ])
+                    .cropped(to: CGRect(x: 0, y: 0, width: Self.width, height: Self.height))
+            }
+            guard let pool else { return }
+            var fresh: CVPixelBuffer?
+            CVPixelBufferPoolCreatePixelBuffer(kCFAllocatorDefault, pool, &fresh)
+            guard let fresh else { return }
+            ciContext.render(image, to: fresh)
+            out = fresh
+            if renderLag {
+                heldFrame = fresh
+                heldAt = now
+            } else {
+                heldFrame = nil
+            }
+        }
 
         sink.send(out)
         outputFeed.push(out)
