@@ -600,6 +600,38 @@ final class Engine: ObservableObject {
         }
     }
 
+    /// Checks Bad Connection on the live camera: saves the output every 0.25 s for 4 s at
+    /// 1 fps, then every 0.1 s for 1 s at full speed, into Application Support/Zoomie
+    /// Toolz/lag-test. At 1 fps most saved frames should be repeats. For testing.
+    func testLag(waited: Double = 0) {
+        guard cameraConnected || waited >= 30 else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { self.testLag(waited: waited + 0.5) }
+            return
+        }
+        let dir = LoopRecorder.directory.appendingPathComponent("lag-test", isDirectory: true)
+        try? FileManager.default.removeItem(at: dir)
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        setMode(.live)
+        lagPixelation = 16
+        lagFPS = 1
+        lagEnabled = true
+        NSLog("Zoomie Toolz: lag test started")
+        func snap(_ name: String, at delay: Double) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                let url = dir.appendingPathComponent(name + ".png")
+                self.renderQueue.async { self.snapshotURL = url }
+            }
+        }
+        for i in 0..<16 { snap(String(format: "slow-%02d", i), at: 1.0 + Double(i) * 0.25) }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.2) { self.lagFPS = Self.fps }
+        for i in 0..<10 { snap(String(format: "fast-%02d", i), at: 5.6 + Double(i) * 0.1) }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 7.0) {
+            self.goLive()
+            self.lagFPS = 2
+            NSLog("Zoomie Toolz: lag test done, frames in %@", dir.path)
+        }
+    }
+
     func toggleBlur() {
         blurBackground.toggle()
     }

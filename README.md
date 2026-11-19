@@ -8,7 +8,7 @@ Video reaches Zoom through **OBS Virtual Camera** (part of the free OBS Studio),
 
 ## Download
 
-**[Zoomie-Toolz-1.3.dmg](https://github.com/TechnAudioToolz/zoomie-toolz/releases/latest)** (under Assets on the latest release, about 2.5 MB)
+**[Zoomie-Toolz-1.4.dmg](https://github.com/TechnAudioToolz/zoomie-toolz/releases/latest)** (under Assets on the latest release, about 2.5 MB)
 
 - Needs **macOS 14 Sonoma or newer**, on Apple Silicon or Intel.
 - Open the `.dmg` and drag **Zoomie Toolz** to Applications.

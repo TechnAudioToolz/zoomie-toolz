@@ -60,6 +60,11 @@ struct ZoomieToolzApp: App {
                         Screenshots.run(engine: engine, into: URL(fileURLWithPath: args[i + 1]), picture: fakePicture)
                         return
                     }
+                    // `--test-lag` checks Bad Connection's frame holding on the live camera.
+                    if args.contains("--test-lag") {
+                        engine.testLag()
+                        return
+                    }
                     // `--test-filters` saves one live output frame per funny face filter.
                     if args.contains("--test-filters") {
                         engine.testFilters()
