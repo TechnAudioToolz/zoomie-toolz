@@ -110,6 +110,8 @@ OBS's camera extension and Zoomie Cam both have a "sink" stream that accepts fra
 
 ## Troubleshooting
 
+- **Bad Connection pixelation looks smooth in Zoom:** Zoom's own background effects (virtual background or blur) re-draw everything around you and smooth the blocks away. Set Zoom's **Backgrounds & Effects** to **None** and use Zoomie's **Blur background** instead; Zoomie pixelates after its blur, so the blocks survive. The frame-rate drop comes through either way.
+
 - **macOS keeps asking for camera or Accessibility permission:** every new build of the app (each update, or each time you build it yourself) is a "new app" to macOS, because it isn't signed with an Apple Developer certificate. Install it once in /Applications and open it from there; it keeps its permissions until you update it. If System Settings already shows Zoomie Toolz as allowed but it still asks, remove the old entry (−) and allow it again.
 
 - **Zoom shows the OBS logo instead of you:** make sure Zoomie Toolz is open and the Virtual camera dot is green. Quit and reopen Zoom if it was open before OBS's camera was approved.
