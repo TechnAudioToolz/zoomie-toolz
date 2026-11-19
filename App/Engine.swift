@@ -600,6 +600,11 @@ final class Engine: ObservableObject {
         }
     }
 
+    /// Saves the next output frame as a PNG. For testing.
+    func snapshotOutput(to url: URL) {
+        renderQueue.async { self.snapshotURL = url }
+    }
+
     /// Checks Bad Connection on the live camera: saves the output every 0.25 s for 4 s at
     /// 1 fps, then every 0.1 s for 1 s at full speed, into Application Support/Zoomie
     /// Toolz/lag-test. At 1 fps most saved frames should be repeats. For testing.

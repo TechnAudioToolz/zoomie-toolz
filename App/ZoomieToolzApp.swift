@@ -60,6 +60,11 @@ struct ZoomieToolzApp: App {
                         Screenshots.run(engine: engine, into: URL(fileURLWithPath: args[i + 1]), picture: fakePicture)
                         return
                     }
+                    // `--probe-obs` compares Zoomie's output with what comes out of OBS Virtual Camera.
+                    if args.contains("--probe-obs") {
+                        OBSProbe.run(engine: engine)
+                        return
+                    }
                     // `--test-lag` checks Bad Connection's frame holding on the live camera.
                     if args.contains("--test-lag") {
                         engine.testLag()
