@@ -31,6 +31,13 @@ struct ZoomieToolzApp: App {
                 .onAppear {
                     guard !started else { return }
                     started = true
+                    let args = ProcessInfo.processInfo.arguments
+                    // `--fake-camera <picture>`: use a picture instead of the webcam (screenshots).
+                    var fakePicture: URL?
+                    if let i = args.firstIndex(of: "--fake-camera"), i + 1 < args.count {
+                        fakePicture = URL(fileURLWithPath: args[i + 1])
+                        engine.fakeCameraURL = fakePicture
+                    }
                     engine.start()
                     hotKeys.register(keyCode: kVK_ANSI_L) { [engine] in engine.toggleMode() }
                     hotKeys.register(keyCode: kVK_ANSI_R) { [engine] in engine.toggleRecording() }
@@ -43,9 +50,13 @@ struct ZoomieToolzApp: App {
                     // Let the window draw first, then walk through anything that's missing.
                     // For testing: `open -a "Zoomie Toolz" --args --test-record 4` records a 4-second
                     // take once the camera is sending video, then stops, and skips the launch popups.
-                    let args = ProcessInfo.processInfo.arguments
                     if let i = args.firstIndex(of: "--test-record"), i + 1 < args.count, let seconds = Double(args[i + 1]) {
                         engine.testRecord(seconds: seconds)
+                        return
+                    }
+                    // `--screenshots <folder>` captures the window in the dark theme for marketing.
+                    if let i = args.firstIndex(of: "--screenshots"), i + 1 < args.count {
+                        Screenshots.run(engine: engine, into: URL(fileURLWithPath: args[i + 1]), picture: fakePicture)
                         return
                     }
                     // `--test-filters` saves one live output frame per funny face filter.

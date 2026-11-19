@@ -1,4 +1,5 @@
 import AVFoundation
+import CoreImage
 import CoreVideo
 import QuartzCore
 
@@ -47,8 +48,53 @@ final class CameraSource: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         start(deviceID: deviceID)
     }
 
+    // MARK: Fake camera
+
+    /// While set, a picture file stands in for the webcam (for marketing screenshots):
+    /// the real camera is never opened, so no permission prompt and nobody's face.
+    private var fakeTimer: DispatchSourceTimer?
+
+    /// Shows `imageURL` as the camera feed, filling a 1920x1080 frame.
+    func startFake(imageURL: URL) {
+        guard let source = CIImage(contentsOf: imageURL, options: [.applyOrientationProperty: true]) else {
+            NSLog("Zoomie Toolz: fake camera couldn't read %@", imageURL.path)
+            return
+        }
+        let width: CGFloat = 1920, height: CGFloat = 1080
+        let scale = max(width / source.extent.width, height / source.extent.height)
+        let scaled = source.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        let filled = scaled.transformed(by: CGAffineTransform(
+            translationX: (width - scaled.extent.width) / 2 - scaled.extent.minX,
+            y: (height - scaled.extent.height) / 2 - scaled.extent.minY))
+        let ctx = CIContext()
+        // A few copies, handed out in turn, so every "frame" is a new buffer like a real camera's.
+        let buffers: [CVPixelBuffer] = (0..<3).compactMap { _ in
+            var pb: CVPixelBuffer?
+            CVPixelBufferCreate(kCFAllocatorDefault, Int(width), Int(height), kCVPixelFormatType_32BGRA,
+                                [kCVPixelBufferIOSurfacePropertiesKey as String: [:] as [String: Any]] as CFDictionary, &pb)
+            if let pb { ctx.render(filled, to: pb) }
+            return pb
+        }
+        guard !buffers.isEmpty else { return }
+        queue.async { [self] in
+            session.stopRunning()
+            var index = 0
+            let timer = DispatchSource.makeTimerSource(queue: queue)
+            timer.schedule(deadline: .now(), repeating: 1.0 / 30)
+            timer.setEventHandler { [weak self] in
+                guard let self else { return }
+                index = (index + 1) % buffers.count
+                lock.lock(); _latest = buffers[index]; lastFrameTime = CACurrentMediaTime(); lock.unlock()
+            }
+            timer.resume()
+            fakeTimer = timer
+            NSLog("Zoomie Toolz: fake camera showing %@", imageURL.lastPathComponent)
+        }
+    }
+
     func start(deviceID: String?) {
         queue.async { [self] in
+            guard fakeTimer == nil else { return }  // the fake camera is in use
             lock.lock(); _latest = nil; lock.unlock()
             session.beginConfiguration()
             session.inputs.forEach { session.removeInput($0) }

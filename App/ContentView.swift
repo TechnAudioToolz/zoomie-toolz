@@ -248,15 +248,14 @@ struct ContentView: View {
             }
 
             HStack(spacing: 10) {
-                Text("Fade between modes")
                 Slider(value: $engine.fadeDuration, in: 0...1, step: 0.05) {
-                    Text("Fade")
+                    Text("Fade between modes")
                 } minimumValueLabel: {
                     Text("Cut").font(.caption)
                 } maximumValueLabel: {
                     Text("1 s").font(.caption)
                 }
-                .frame(width: 220)
+                .frame(width: 360)
                 .help("Left = hard cut when switching Live, Loop, Image and Black. Slide right for a fade.")
                 Text(engine.fadeDuration < 0.05 ? "Hard cut" : String(format: "%.2f s fade", engine.fadeDuration))
                     .font(.caption).foregroundStyle(.secondary)

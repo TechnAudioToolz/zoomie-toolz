@@ -166,7 +166,14 @@ final class Engine: ObservableObject {
         self.timer = timer
     }
 
+    /// Set before start() to use a picture instead of the webcam (screenshots).
+    var fakeCameraURL: URL?
+
     private func startCamera() {
+        if let fakeCameraURL {
+            camera.startFake(imageURL: fakeCameraURL)
+            return
+        }
         NSLog("Zoomie Toolz: camera permission %d", AVCaptureDevice.authorizationStatus(for: .video).rawValue)
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
@@ -306,6 +313,21 @@ final class Engine: ObservableObject {
                 }
             }
         }
+    }
+
+    /// Shows an image as the current picture without saving it over the user's own
+    /// (for screenshots).
+    func showTemporaryStill(_ url: URL) {
+        guard let image = CIImage(contentsOf: url, options: [.applyOrientationProperty: true]) else { return }
+        let filled = aspectFill(image)
+            .composited(over: CIImage(color: .black))
+            .cropped(to: CGRect(x: 0, y: 0, width: Self.width, height: Self.height))
+        guard let cg = ciContext.createCGImage(filled, from: filled.extent) else { return }
+        stillPreview = NSImage(cgImage: cg, size: NSSize(width: cg.width, height: cg.height))
+        imageName = url.lastPathComponent
+        hasImage = true
+        let flat = CIImage(cgImage: cg)
+        renderQueue.async { self.still = flat }
     }
 
     /// Uses an image file (any format Core Image reads) as the still.
